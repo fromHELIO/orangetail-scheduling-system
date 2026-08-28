@@ -204,9 +204,7 @@ export default function GenerateScreen({ onBack, onViewSchedules }) {
     const startMin = toMinutes(start_time);
     const endMin = toMinutes(end_time);
 
-    // Get all slots on the same day
     const daySlots = timeSlots.filter((t) => t.day === day);
-    // Find overlapping slots
     const overlappingSlotIds = daySlots
       .filter(
         (t) =>
@@ -216,7 +214,6 @@ export default function GenerateScreen({ onBack, onViewSchedules }) {
 
     if (overlappingSlotIds.length === 0) return { hard, soft };
 
-    // Professor overlap check
     if (assignment.professor_id) {
       const { data } = await supabase
         .from("schedules")
@@ -227,7 +224,6 @@ export default function GenerateScreen({ onBack, onViewSchedules }) {
       if (data?.length > 0)
         hard.push("Professor has an overlapping class at this time.");
 
-      // Soft: 3+ classes on same day
       const allDaySlotIds = daySlots.map((t) => t.slot_id);
       const { data: dayData } = await supabase
         .from("schedules")
@@ -238,7 +234,6 @@ export default function GenerateScreen({ onBack, onViewSchedules }) {
         soft.push("Professor already has 3+ classes on this day.");
     }
 
-    // Room overlap check
     if (assignment.room_id) {
       const { data } = await supabase
         .from("schedules")
@@ -289,7 +284,6 @@ export default function GenerateScreen({ onBack, onViewSchedules }) {
           ? [e.lec_day || "Monday"]
           : LECTURE_PAIRS_SUM[e.lec_pair ?? 0].days;
 
-        // Get or create offering once
         const course = allCourses.find(
           (c) => c.course_id === Number(e.course_id),
         );
@@ -317,7 +311,6 @@ export default function GenerateScreen({ onBack, onViewSchedules }) {
           offeringId = newOff.offering_id;
         }
 
-        // Insert a schedule row for each day
         for (const day of days) {
           const slotId = await getOrCreateSlot(day, start_time, end_time);
           await supabase.from("schedules").insert({
@@ -350,6 +343,7 @@ export default function GenerateScreen({ onBack, onViewSchedules }) {
     setGenerating(true);
     setGenerateError("");
     setGenerateWarning(null);
+
     const blockRequests = Object.entries(curriculumSelections).flatMap(
       ([id, v]) =>
         v.checked
@@ -362,42 +356,55 @@ export default function GenerateScreen({ onBack, onViewSchedules }) {
               }))
           : [],
     );
+
     try {
       const apiUrl = import.meta.env.VITE_ALGORITHM_API_URL;
       if (!apiUrl) throw new Error("VITE_ALGORITHM_API_URL is not set.");
+
+      // 1. Trigger background generation job
       const res = await fetch(`${apiUrl}/api/generate-schedule`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           school_year: `${schoolYearStart}-${schoolYearEnd}`,
           semester: Number(semester),
           block_requests: blockRequests,
         }),
       });
+
       if (!res.ok) {
         const body = await res.json().catch(() => null);
         throw new Error(body?.detail || `Generation failed (${res.status}).`);
       }
+
+      const { job_id } = await res.json();
+      if (!job_id) throw new Error("Failed to start schedule generation job.");
+
+      // 2. Poll job status until finished
+      let jobResult = null;
+      while (true) {
+        await new Promise((r) => setTimeout(r, 2000));
+        const statusRes = await fetch(`${apiUrl}/api/generate-schedule/${job_id}`);
+        if (!statusRes.ok) {
+          throw new Error("Failed to check schedule generation status.");
+        }
+        const statusData = await statusRes.json();
+
+        if (statusData.status === "complete") {
+          jobResult = statusData.result;
+          break;
+        } else if (statusData.status === "failed") {
+          throw new Error(statusData.error || "Generation job failed.");
+        }
+      }
+
       const {
         schedule: items,
         hard_violations: hardViolations,
         violation_breakdown: violationBreakdown,
         violation_drilldowns: violationDrilldowns,
-      } = await res.json();
+      } = jobResult || {};
 
-      console.log("ALGORITHM ITEMS:", items);
-
-      console.table(
-        items.map((it) => ({
-          course: it.course_code,
-          section: it.section_name,
-          room: it.room,
-          room_id: it.room_id,
-          room_name: it.room_name,
-        })),
-      );
       if (!items?.length)
         throw new Error("The algorithm didn't return any schedule items.");
 
@@ -405,7 +412,7 @@ export default function GenerateScreen({ onBack, onViewSchedules }) {
       const schoolYearStr = `${schoolYearStart}-${schoolYearEnd}`;
       const sem = Number(semester);
 
-      // 1. Fetch reference data
+      // 3. Fetch reference data
       const [
         { data: allCurricula },
         { data: existingSections },
@@ -435,7 +442,6 @@ export default function GenerateScreen({ onBack, onViewSchedules }) {
         sectionNameById[s.section_id] = s.section_name;
       });
 
-      // Build courseMap — key by trimmed uppercase code to handle any whitespace differences
       const courseMap = {};
       const courseCodeById = {};
       (allCoursesData || []).forEach((c) => {
@@ -444,7 +450,7 @@ export default function GenerateScreen({ onBack, onViewSchedules }) {
         courseCodeById[c.course_id] = c.course_code;
       });
 
-      // 2. Create missing sections
+      // 4. Create missing sections
       const uniqueSections = [
         ...new Map(items.map((it) => [it.section_name, it])).values(),
       ];
@@ -471,7 +477,7 @@ export default function GenerateScreen({ onBack, onViewSchedules }) {
         });
       }
 
-      // 3. Create missing time slots
+      // 5. Create missing time slots
       const { data: existingSlots } = await supabase
         .from("time_slots")
         .select("slot_id, day, start_time, end_time");
@@ -500,8 +506,7 @@ export default function GenerateScreen({ onBack, onViewSchedules }) {
         slotMap[slotKey(s.day, s.start_time, s.end_time)] = s.slot_id;
       });
 
-      // 4. Create missing class_offerings
-      // Normalize algorithm course codes the same way as courseMap keys
+      // 6. Create missing class_offerings
       const getCourseId = (it) =>
         it.course_id || courseMap[(it.course_code || "").trim().toUpperCase()];
 
@@ -536,14 +541,6 @@ export default function GenerateScreen({ onBack, onViewSchedules }) {
         if (o.class_code) classCodeMap[o.class_code] = o.offering_id;
       });
 
-      // The database's uniqueness guarantee is on class_code itself, not on
-      // the (section_id, course_id) pair -- so matching only on that pair
-      // isn't enough to rule out a collision. For every candidate not
-      // already recognized by that pair, also check whether its computed
-      // class_code already exists under some OTHER pair (which can happen
-      // if this generation resolves section/course ids slightly differently
-      // than whatever created the existing row) and reuse that offering
-      // instead of attempting a duplicate insert the database would reject.
       const reusedOfferings = [];
       const offeringsToCreate = [];
       offeringKeys
@@ -578,7 +575,7 @@ export default function GenerateScreen({ onBack, onViewSchedules }) {
             /duplicate key/i.test(offErr.message || "");
           if (isDuplicate) {
             throw new Error(
-              `A class offering already exists with a matching code for this term -- this usually means a schedule for this school year and semester already exists. Check the Sessions list before generating again. (${offErr.message})`,
+              `A class offering already exists with a matching code for this term -- check the Sessions list before generating again. (${offErr.message})`,
             );
           }
           throw offErr;
@@ -588,7 +585,7 @@ export default function GenerateScreen({ onBack, onViewSchedules }) {
         });
       }
 
-      // 5. Batch insert schedules
+      // 7. Batch insert schedules
       const skippedItems = [];
       const scheduleRows = items
         .map((it) => {
@@ -597,36 +594,24 @@ export default function GenerateScreen({ onBack, onViewSchedules }) {
           const slotId = slotMap[slotKey(it.day, it.start_time, it.end_time)];
           const offeringId = offeringMap[`${sId}|${cId}`];
           if (!cId) {
-            console.warn("[GEN] skipping — course not found:", it.course_code);
             skippedItems.push(
               `${it.course_code || "unknown course"} (course not recognized)`,
             );
             return null;
           }
           if (!sId) {
-            console.warn(
-              "[GEN] skipping — section not found:",
-              it.section_name,
-            );
             skippedItems.push(
               `${it.section_name || "unknown section"} (section not recognized)`,
             );
             return null;
           }
           if (!slotId) {
-            console.warn(
-              "[GEN] skipping — slot not found:",
-              it.day,
-              it.start_time,
-              it.end_time,
-            );
             skippedItems.push(
               `${it.course_code || "item"} (time slot ${it.day} ${it.start_time}-${it.end_time} not recognized)`,
             );
             return null;
           }
           if (!offeringId) {
-            console.warn("[GEN] skipping — offering not found:", { sId, cId });
             skippedItems.push(
               `${it.course_code || "item"} in ${it.section_name || "unknown section"} (offering not recognized)`,
             );
@@ -637,8 +622,8 @@ export default function GenerateScreen({ onBack, onViewSchedules }) {
 
           return {
             offering_id: offeringId,
-            professor_id: major ? it.professor_id || null : null, // GenEd = Unassigned
-            room_id: it.room_id || null, // GenEd = room assigned
+            professor_id: major ? it.professor_id || null : null,
+            room_id: it.room_id || null,
             slot_id: slotId,
             status: "Generated",
             generated_at: generatedAt,
@@ -727,7 +712,6 @@ export default function GenerateScreen({ onBack, onViewSchedules }) {
   }
 
   async function handleDeleteSession(session) {
-    // Approved sessions cannot be deleted
     if (session.status?.toLowerCase() === "approved") {
       return;
     }
