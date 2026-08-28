@@ -762,6 +762,69 @@ def count_total_violations(chromosome, teacher_ranked_subjects=None, room_info=N
 
     return total_violations
 
+
+# def diagnose_conflicts(chromosome, teacher_ranked_subjects=None, room_info=None, teacher_max_load=None):
+#     """Utility to print exact breakdown of what makes up the remaining hard conflicts."""
+#     room_conflicts = 0
+#     teacher_time_conflicts = 0
+#     section_time_conflicts = 0
+#     eligibility_conflicts = 0
+#     linkage_conflicts = 0
+#     overload_conflicts = 0
+
+#     teacher_schedule = defaultdict(list)
+#     room_schedule = defaultdict(list)
+#     section_schedule = defaultdict(list)
+#     section_subject = defaultdict(list)
+#     teacher_counts = defaultdict(int)
+
+#     for idx, g in enumerate(chromosome):
+#         teacher_counts[g.teacher_name] += 1
+
+#         if teacher_ranked_subjects:
+#             ranked = teacher_ranked_subjects.get(g.teacher_name, [])
+#             if ranked and g.subjcode not in ranked:
+#                 eligibility_conflicts += 1
+
+#         for _, existing in teacher_schedule[g.teacher_name]:
+#             if genes_overlap(g, existing):
+#                 teacher_time_conflicts += 1
+#         teacher_schedule[g.teacher_name].append((idx, g))
+
+#         for _, existing in room_schedule[g.room]:
+#             if genes_overlap(g, existing):
+#                 room_conflicts += 1
+#         room_schedule[g.room].append((idx, g))
+
+#         for _, existing in section_schedule[g.section]:
+#             if genes_overlap(g, existing):
+#                 section_time_conflicts += 1
+#         section_schedule[g.section].append((idx, g))
+
+#         section_subject[(g.section, g.subjcode)].append((idx, g))
+
+#     for (sec, subj), gene_tuples in section_subject.items():
+#         if len(gene_tuples) > 1:
+#             teachers = {g.teacher_name for _, g in gene_tuples}
+#             if len(teachers) > 1:
+#                 linkage_conflicts += (len(teachers) - 1)
+
+#     if teacher_max_load:
+#         for t_name, count in teacher_counts.items():
+#             max_allowed = teacher_max_load.get(t_name, 10)
+#             if count > max_allowed:
+#                 overload_conflicts += (count - max_allowed)
+
+#     print(f"\n--- 🔍 CONFLICT DIAGNOSTIC BREAKDOWN ---")
+#     print(f"Room Overlaps          : {room_conflicts}")
+#     print(f"Teacher Time Overlaps  : {teacher_time_conflicts}")
+#     print(f"Section Time Overlaps  : {section_time_conflicts}")
+#     print(f"Teacher Ineligibility  : {eligibility_conflicts}")
+#     print(f"Linkage Conflicts      : {linkage_conflicts}")
+#     print(f"Teacher Overload       : {overload_conflicts}")
+#     print(f"----------------------------------------\n")
+
+
 def count_violations_by_category(chromosome, teacher_ranked_subjects=None, room_info=None,
                                    teacher_max_load=None, teacher_priority=None, teachers_per_subject=None,
                                    teacher_availability=None):
@@ -1368,7 +1431,25 @@ def apply_gene_mutation(chromosome, target_idx, mutation_type, available_teacher
 
     elif mutation_type == 'room':
         if is_gened:
-            return  # placeholder room -- real assignment is out of scope, nothing to mutate
+            linked_schedtypes_all = [target_gene.schedtype] + [chromosome[idx].schedtype for idx in linked_indices]
+            gened_has_lab = any(lab_matching._is_lab_session(st) for st in linked_schedtypes_all)
+            if gened_has_lab:
+                return  # exemption: has a lab counterpart, stays fully placeholder -- unchanged from before
+            # Pure-lecture GenEd: real, mutable room now, same GENED-pool
+            # matching initialize_population uses for these.
+            if room_info:
+                valid_rooms = lab_matching.get_valid_rooms(target_gene.schedtype, target_gene.lab_cat, room_info)
+                if not valid_rooms:
+                    valid_rooms = available_rooms
+            else:
+                valid_rooms = available_rooms
+            new_room = random.choice(valid_rooms)
+            target_gene.room = new_room
+            linked_schedtypes = [chromosome[idx].schedtype for idx in linked_indices]
+            if _pairing_mode_for_schedtypes(linked_schedtypes) == 'lecture_pair':
+                for idx in linked_indices:
+                    chromosome[idx].room = new_room
+            return
         if room_info:
             valid_rooms = lab_matching.get_valid_rooms(target_gene.schedtype, target_gene.lab_cat, room_info)
             if not valid_rooms:
@@ -1460,6 +1541,16 @@ def initialize_population(pop_size, class_requirements, available_teachers, teac
         chromosome = []
         for (sec, subj), req_list in grouped_reqs.items():
             is_gened = _is_gened_subject(subj)
+            # GenEd courses with a lab counterpart (a face-to-face lab paired
+            # with a placeholder-scheduled lecture half) stay fully placeholder
+            # -- real assignment for those remains out of scope. Pure-lecture
+            # GenEd, with no lab meeting at all, is the exemption: these are
+            # actually held at the SoC building, so a real room can now be
+            # reserved for them from the GENED-tagged pool (SJH's 5th floor),
+            # even though the professor still stays a placeholder.
+            gened_has_lab = is_gened and any(
+                lab_matching._is_lab_session(r['SCHEDTYPE']) for r in req_list
+            )
 
             if is_gened:
                 # Real professor assignment for GenEd/non-SoC courses is out
@@ -1490,11 +1581,23 @@ def initialize_population(pop_size, class_requirements, available_teachers, teac
                     # Same room as the first meeting -- valid by construction,
                     # since both meetings share the same schedtype/lab_cat.
                     room = first_room
-                elif is_gened:
-                    # Same reasoning as the teacher placeholder above: real
-                    # room assignment is out of scope, only the time slot is
-                    # actually solved here.
+                elif is_gened and gened_has_lab:
+                    # Exemption: has a lab counterpart, stays fully placeholder.
                     room = f"TBA-RM-{sec}|{subj}"
+                    if i == 0:
+                        first_room = room
+                elif is_gened:
+                    # Pure-lecture GenEd: real room now, drawn from the same
+                    # GENED-pool matching a regular SoC pure-lecture session
+                    # would use -- lab_matching.py already routes non-lab
+                    # sessions by lec_cat, this simply starts using it here.
+                    if room_info:
+                        valid_rooms = lab_matching.get_valid_rooms(sched_type, req['LAB_CAT'], room_info)
+                        if not valid_rooms:
+                            valid_rooms = available_rooms
+                    else:
+                        valid_rooms = available_rooms
+                    room = random.choice(valid_rooms)
                     if i == 0:
                         first_room = room
                 else:
