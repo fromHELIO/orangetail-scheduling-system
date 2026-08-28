@@ -364,35 +364,83 @@ export default function GenerateScreen({ onBack, onViewSchedules }) {
     try {
       const apiUrl = import.meta.env.VITE_ALGORITHM_API_URL;
       if (!apiUrl) throw new Error("VITE_ALGORITHM_API_URL is not set.");
-      const res = await fetch(`${apiUrl}/api/generate-schedule`, {
+
+      // Required when apiUrl points at an ngrok tunnel -- ngrok's free tier
+      // injects an HTML warning page on the first request from any client
+      // unless this header is present, which would otherwise break these
+      // fetches (JSON expected, HTML received). Harmless against a normal
+      // server, which just ignores an unrecognized header.
+      const ngrokHeaders = { "ngrok-skip-browser-warning": "true" };
+
+      // 1. Start the job. This returns almost immediately with a job ID,
+      // rather than holding one connection open for the full generation,
+      // which can take up to an hour or more. Polling below replaces that
+      // single long-lived connection with short, independent checks -- no
+      // one request has to survive the whole computation, so a dropped
+      // connection just means the next poll retries moments later, not a
+      // lost result.
+      const startRes = await fetch(`${apiUrl}/api/generate-schedule`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          // Required when apiUrl points at an ngrok tunnel -- ngrok's free
-          // tier injects an HTML warning page on the first request from any
-          // client unless this header is present, which would otherwise
-          // break this fetch (JSON expected, HTML received). Harmless
-          // against a normal server, which just ignores an unrecognized
-          // header, so this is safe to leave in regardless of where apiUrl
-          // points.
-          "ngrok-skip-browser-warning": "true",
-        },
+        headers: { "Content-Type": "application/json", ...ngrokHeaders },
         body: JSON.stringify({
           school_year: `${schoolYearStart}-${schoolYearEnd}`,
           semester: Number(semester),
           block_requests: blockRequests,
         }),
       });
-      if (!res.ok) {
-        const body = await res.json().catch(() => null);
-        throw new Error(body?.detail || `Generation failed (${res.status}).`);
+      if (!startRes.ok) {
+        const body = await startRes.json().catch(() => null);
+        throw new Error(
+          body?.detail || `Generation failed to start (${startRes.status}).`,
+        );
       }
+      const { job_id: jobId } = await startRes.json();
+
+      // 2. Poll for completion every few seconds.
+      const POLL_INTERVAL_MS = 4000;
+      const MAX_POLL_HOURS = 3;
+      const maxAttempts = Math.ceil(
+        (MAX_POLL_HOURS * 60 * 60 * 1000) / POLL_INTERVAL_MS,
+      );
+
+      let job = null;
+      for (let attempt = 0; attempt < maxAttempts; attempt++) {
+        await new Promise((resolve) => setTimeout(resolve, POLL_INTERVAL_MS));
+        const pollRes = await fetch(
+          `${apiUrl}/api/generate-schedule/${jobId}`,
+          { headers: ngrokHeaders },
+        );
+        if (!pollRes.ok) {
+          if (pollRes.status === 404) {
+            throw new Error(
+              "The generation job could not be found — the backend may have restarted while this was running. Please try generating again.",
+            );
+          }
+          const body = await pollRes.json().catch(() => null);
+          throw new Error(
+            body?.detail ||
+              `Checking generation status failed (${pollRes.status}).`,
+          );
+        }
+        job = await pollRes.json();
+        if (job.status === "complete" || job.status === "failed") break;
+      }
+
+      if (!job || job.status === "running") {
+        throw new Error(
+          "Generation is taking longer than expected and this session stopped waiting. The backend may still be working on it — check the terminal, or try again shortly.",
+        );
+      }
+      if (job.status === "failed") {
+        throw new Error(job.error || "Generation failed.");
+      }
+
       const {
         schedule: items,
         hard_violations: hardViolations,
         violation_breakdown: violationBreakdown,
         violation_drilldowns: violationDrilldowns,
-      } = await res.json();
+      } = job.result;
       if (!items?.length)
         throw new Error("The algorithm didn't return any schedule items.");
 
