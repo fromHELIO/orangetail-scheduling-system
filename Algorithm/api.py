@@ -1,4 +1,7 @@
 from typing import List, Optional
+import threading
+import time
+import uuid
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -28,6 +31,35 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Generation is CPU-bound and can take up to an hour; running two at once on
+# one machine doesn't parallelize meaningfully (Python's GIL means they just
+# share one CPU's worth of real work), so both end up far slower than either
+# alone. Rather than let that happen silently, a second request while one is
+# already running is rejected immediately with a clear message instead of
+# competing for the same CPU.
+_generation_lock = threading.Lock()
+
+# In-memory job store: job_id -> {"status": "running"|"complete"|"failed",
+# "result": {...}, "error": "...", "created_at": float}. Fine for a single
+# process; if this is ever deployed behind multiple worker processes, this
+# would need to move to something shared (Redis, a DB table), since each
+# worker would otherwise have its own separate, inconsistent copy.
+_jobs = {}
+_jobs_lock = threading.Lock()
+_JOB_MAX_AGE_SECONDS = 6 * 60 * 60  # 6 hours
+
+
+def _prune_old_jobs():
+    """Opportunistic cleanup, run each time a new job starts, rather than a
+    separate timer thread -- keeps the in-memory store from growing
+    unbounded over a long-lived deployment without adding any new moving
+    parts."""
+    cutoff = time.time() - _JOB_MAX_AGE_SECONDS
+    with _jobs_lock:
+        stale = [jid for jid, job in _jobs.items() if job.get("created_at", 0) < cutoff]
+        for jid in stale:
+            del _jobs[jid]
+
 
 # --- Pydantic Models ---
 
@@ -52,17 +84,23 @@ def health():
     return {"status": "ok"}
 
 
-@app.post("/api/generate-schedule")
-def generate_schedule_endpoint(req: GenerateRequest):
-    """Runs the algorithm and returns the schedule. Nothing is written to the
-    database here -- the frontend saves this itself (status "Generated")
-    right after receiving it; this endpoint doesn't know or care what happens
-    to its response after it's returned."""
+def _run_generation_job(job_id: str, req: GenerateRequest):
+    """Runs in a background thread, started by start_generate_schedule below.
+    The generation lock is already held by the time this starts -- acquired
+    synchronously in the endpoint, before the thread was spawned -- and this
+    function is responsible for releasing it once done, success or failure,
+    via its finally block. This must never exit without going through that
+    finally block, or the lock would stay held forever.
+
+    The actual body here is unchanged from what used to run directly inside
+    the request handler -- only where it runs, and how the result gets
+    delivered, has changed."""
     try:
         if not req.block_requests:
-            raise HTTPException(
-                status_code=400, detail="At least one block request must be provided."
-            )
+            with _jobs_lock:
+                _jobs[job_id]["status"] = "failed"
+                _jobs[job_id]["error"] = "At least one block request must be provided."
+            return
 
         (
             reqs,
@@ -79,10 +117,10 @@ def generate_schedule_endpoint(req: GenerateRequest):
         ) = fetch_scheduling_data(req.school_year, req.semester, req.block_requests)
 
         if not reqs:
-            raise HTTPException(
-                status_code=400,
-                detail="No class requirements generated for the selected parameters.",
-            )
+            with _jobs_lock:
+                _jobs[job_id]["status"] = "failed"
+                _jobs[job_id]["error"] = "No class requirements generated for the selected parameters."
+            return
 
         ml_lookup = build_ml_lookup(reqs, teachers, teachers_per_subj)
 
@@ -145,15 +183,69 @@ def generate_schedule_endpoint(req: GenerateRequest):
 
         preview = format_schedule_preview(best_schedule, teacher_id_map, room_info, class_id_meta)
 
-        return {
-            "status": "success",
-            "schedule": preview,
-            "hard_violations": sum(breakdown.values()) if breakdown else 0,
-            "violation_breakdown": breakdown,
-            "violation_drilldowns": drilldowns,
-        }
+        with _jobs_lock:
+            _jobs[job_id]["status"] = "complete"
+            _jobs[job_id]["result"] = {
+                "status": "success",
+                "schedule": preview,
+                "hard_violations": sum(breakdown.values()) if breakdown else 0,
+                "violation_breakdown": breakdown,
+                "violation_drilldowns": drilldowns,
+            }
 
-    except HTTPException:
-        raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        with _jobs_lock:
+            _jobs[job_id]["status"] = "failed"
+            _jobs[job_id]["error"] = str(e)
+    finally:
+        _generation_lock.release()
+
+
+@app.post("/api/generate-schedule")
+def start_generate_schedule(req: GenerateRequest):
+    """Starts generation in a background thread and returns immediately with
+    a job ID to poll, instead of holding one HTTP request open for up to an
+    hour. Rejects immediately and synchronously -- no polling needed to
+    discover this -- if another generation is already running, matching the
+    exact same behavior this endpoint had before this change."""
+    if not _generation_lock.acquire(blocking=False):
+        raise HTTPException(
+            status_code=409,
+            detail="Another schedule generation is currently in progress on this server. Please wait for it to finish, then try again.",
+        )
+
+    _prune_old_jobs()
+
+    job_id = str(uuid.uuid4())
+    with _jobs_lock:
+        _jobs[job_id] = {"status": "running", "created_at": time.time()}
+
+    try:
+        thread = threading.Thread(target=_run_generation_job, args=(job_id, req), daemon=True)
+        thread.start()
+    except Exception:
+        # Extremely unlikely (thread creation failing means the system is
+        # already in serious trouble), but if it happens, the lock must
+        # still be released here, since _run_generation_job never got to run
+        # its own finally block.
+        with _jobs_lock:
+            del _jobs[job_id]
+        _generation_lock.release()
+        raise
+
+    return {"job_id": job_id, "status": "running"}
+
+
+@app.get("/api/generate-schedule/{job_id}")
+def get_generation_status(job_id: str):
+    """Polled by the frontend every few seconds. Returns the job's current
+    status, and once complete, the exact same result shape the old
+    synchronous endpoint used to return directly."""
+    with _jobs_lock:
+        job = _jobs.get(job_id)
+    if job is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Unknown job ID -- it may have expired, or the server may have restarted since it was created.",
+        )
+    return job
