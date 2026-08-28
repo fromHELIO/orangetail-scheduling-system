@@ -1,0 +1,694 @@
+.asm-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.25);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+.asm-modal {
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  width: 100%;
+  max-width: 560px;
+  box-shadow: var(--shadow-lg);
+  border: 0.5px solid var(--gray-200);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.asm-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 0.5px solid var(--gray-100);
+  gap: 12px;
+  flex-shrink: 0;
+}
+.asm-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--black);
+  margin-bottom: 2px;
+}
+.asm-sub {
+  font-size: 12px;
+  color: var(--gray-500);
+}
+.asm-reapprove {
+  color: #b45309;
+  font-weight: 500;
+}
+.asm-close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--gray-400);
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  padding: 4px;
+  border-radius: var(--radius-sm);
+  transition: color 0.15s;
+  flex-shrink: 0;
+}
+.asm-close:hover {
+  color: var(--black);
+}
+
+/* Steps */
+.asm-steps {
+  display: flex;
+  align-items: center;
+  padding: 12px 20px;
+  border-bottom: 0.5px solid var(--gray-100);
+  background: var(--gray-50);
+  flex-shrink: 0;
+}
+.asm-step {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+}
+.asm-step:last-child {
+  flex: none;
+}
+.asm-step-num {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 0.5px solid var(--gray-300);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--gray-400);
+  flex-shrink: 0;
+}
+.asm-step-num.active {
+  background: var(--black);
+  color: var(--white);
+  border-color: var(--black);
+}
+.asm-step-num.done {
+  background: var(--green);
+  color: var(--white);
+  border-color: var(--green);
+}
+.asm-step-label {
+  font-size: 11px;
+  color: var(--gray-400);
+  white-space: nowrap;
+}
+.asm-step-label.active {
+  color: var(--black);
+  font-weight: 600;
+}
+.asm-step-line {
+  flex: 1;
+  height: 0.5px;
+  background: var(--gray-200);
+  margin: 0 8px;
+}
+
+/* Body */
+.asm-body {
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 440px;
+  overflow-y: auto;
+}
+.asm-grid2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.asm-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.asm-field label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--gray-600);
+}
+.asm-req {
+  color: var(--red);
+}
+.asm-select {
+  width: 100%;
+  padding: 8px 11px;
+  border: 0.5px solid var(--gray-300);
+  border-radius: var(--radius);
+  font-size: 13px;
+  font-family: inherit;
+  color: var(--black);
+  outline: none;
+  background: var(--white);
+  cursor: pointer;
+  box-sizing: border-box;
+  transition: border-color 0.15s;
+}
+.asm-select:focus {
+  border-color: var(--black);
+}
+
+/* Preview */
+.asm-preview {
+  background: var(--gray-50);
+  border: 0.5px solid var(--gray-100);
+  border-radius: var(--radius);
+  padding: 10px 12px;
+}
+.asm-preview-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--gray-500);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 8px;
+}
+.asm-preview-empty {
+  font-size: 12px;
+  color: var(--gray-400);
+}
+.asm-course-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 0;
+  border-bottom: 0.5px solid var(--gray-100);
+  font-size: 12px;
+}
+.asm-course-row:last-child {
+  border-bottom: none;
+}
+.asm-course-code {
+  font-weight: 700;
+  color: var(--black);
+  min-width: 72px;
+}
+.asm-course-name {
+  flex: 1;
+  color: var(--gray-600);
+}
+.asm-course-units {
+  font-size: 11px;
+  color: var(--gray-400);
+  flex-shrink: 0;
+}
+
+/* Assign row */
+.asm-assign-row {
+  padding: 12px 0;
+  border-bottom: 0.5px solid var(--gray-100);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.asm-assign-row:last-child {
+  border-bottom: none;
+}
+.asm-assign-course {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Review row */
+.asm-review-row {
+  padding: 10px 0;
+  border-bottom: 0.5px solid var(--gray-100);
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.asm-review-row:last-child {
+  border-bottom: none;
+}
+.asm-review-row-error {
+  background: #fff8f8;
+  border-radius: var(--radius);
+  padding: 8px;
+}
+.asm-review-details {
+  display: flex;
+  gap: 14px;
+  font-size: 11px;
+  color: var(--gray-500);
+  flex-wrap: wrap;
+}
+.asm-review-details i {
+  font-size: 12px;
+  margin-right: 3px;
+}
+.asm-note {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--gray-500);
+  padding: 8px 10px;
+  background: var(--gray-50);
+  border-radius: var(--radius);
+  border: 0.5px solid var(--gray-100);
+}
+
+/* Conflicts */
+.asm-conflict-hard {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 8px 10px;
+  background: #fff1f2;
+  border: 0.5px solid #fecdd3;
+  border-radius: var(--radius);
+  color: var(--red);
+  font-size: 12px;
+  line-height: 1.5;
+}
+.asm-conflict-soft {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 8px 10px;
+  background: #fffbeb;
+  border: 0.5px solid #fde68a;
+  border-radius: var(--radius);
+  color: #b45309;
+  font-size: 12px;
+  line-height: 1.5;
+}
+.asm-conflict-hard.sm,
+.asm-conflict-soft.sm {
+  padding: 5px 10px;
+  font-size: 11px;
+}
+
+/* Footer */
+.asm-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px;
+  border-top: 0.5px solid var(--gray-100);
+  flex-shrink: 0;
+}
+.asm-cancel-btn {
+  padding: 8px 16px;
+  border: 0.5px solid var(--gray-200);
+  border-radius: var(--radius);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--gray-600);
+  background: var(--white);
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.asm-cancel-btn:hover {
+  border-color: var(--black);
+  color: var(--black);
+}
+.asm-next-btn,
+.asm-save-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 8px 18px;
+  background: var(--green);
+  color: var(--white);
+  border: none;
+  border-radius: var(--radius);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: opacity 0.15s;
+}
+.asm-next-btn:hover,
+.asm-save-btn:hover {
+  opacity: 0.85;
+}
+.asm-next-btn:disabled,
+.asm-save-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.asm-session-info {
+  font-size: 11px;
+  color: #1d4ed8;
+  margin-top: 3px;
+}
+
+/* Year level buttons */
+.asm-yl-grid {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.asm-yl-btn {
+  padding: 8px 16px;
+  border: 0.5px solid var(--gray-200);
+  border-radius: var(--radius);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--gray-500);
+  background: var(--white);
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s;
+}
+.asm-yl-btn:hover {
+  border-color: var(--black);
+  color: var(--black);
+}
+.asm-yl-btn-active {
+  background: var(--black) !important;
+  color: var(--white) !important;
+  border-color: var(--black) !important;
+}
+
+/* Input */
+.asm-input {
+  width: 100%;
+  padding: 8px 11px;
+  border: 0.5px solid var(--gray-300);
+  border-radius: var(--radius);
+  font-size: 13px;
+  font-family: inherit;
+  color: var(--black);
+  outline: none;
+  background: var(--white);
+  transition: border-color 0.15s;
+  box-sizing: border-box;
+}
+.asm-input:focus {
+  border-color: var(--black);
+}
+.asm-input-error {
+  border-color: var(--red) !important;
+}
+.asm-field-error {
+  font-size: 11px;
+  color: var(--red);
+  margin-top: 3px;
+}
+.asm-hint {
+  font-size: 11px;
+  color: var(--gray-400);
+  margin-top: 4px;
+}
+
+/* Review summary */
+.asm-review-summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  background: var(--gray-50);
+  border-radius: var(--radius);
+  font-size: 13px;
+  color: var(--black);
+  border: 0.5px solid var(--gray-200);
+}
+.asm-review-summary i {
+  color: var(--gray-400);
+  font-size: 15px;
+}
+
+/* Conflict styles */
+.asm-conflict-hard {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 8px 10px;
+  background: #fff1f2;
+  border: 0.5px solid #fecdd3;
+  border-radius: var(--radius);
+  color: var(--red);
+  font-size: 12px;
+  line-height: 1.5;
+}
+.asm-conflict-soft {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 8px 10px;
+  background: #fffbeb;
+  border: 0.5px solid #fde68a;
+  border-radius: var(--radius);
+  color: #b45309;
+  font-size: 12px;
+  line-height: 1.5;
+}
+.asm-conflict-hard.sm,
+.asm-conflict-soft.sm {
+  padding: 5px 10px;
+  font-size: 11px;
+}
+
+/* Course remove/add toggle in step 1 */
+.asm-course-row {
+  position: relative;
+}
+.asm-course-removed {
+  opacity: 0.4;
+}
+.asm-course-remove-btn,
+.asm-course-add-btn {
+  margin-left: auto;
+  background: none;
+  border: 0.5px solid var(--gray-300);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: 12px;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.15s;
+}
+.asm-course-remove-btn {
+  color: var(--red);
+  border-color: #fecdd3;
+}
+.asm-course-remove-btn:hover {
+  background: #fff1f2;
+}
+.asm-course-add-btn {
+  color: var(--green);
+  border-color: #bbf7d0;
+}
+.asm-course-add-btn:hover {
+  background: #f0fdf4;
+}
+.asm-removed-note {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: #b45309;
+  margin-top: 8px;
+  padding: 6px 8px;
+  background: #fffbeb;
+  border-radius: var(--radius);
+}
+
+/* Lecture/Lab tags */
+.asm-course-tags {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+}
+.asm-tag {
+  display: inline-block;
+  padding: 1px 6px;
+  border-radius: 20px;
+  font-size: 10px;
+  font-weight: 700;
+}
+.asm-tag-lec {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+.asm-tag-lab {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+/* Course remove/add buttons */
+.asm-course-removed {
+  opacity: 0.4;
+}
+.asm-course-remove-btn,
+.asm-course-add-btn {
+  margin-left: auto;
+  background: none;
+  border: 0.5px solid var(--gray-300);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: 12px;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.15s;
+}
+.asm-course-remove-btn {
+  color: var(--red);
+  border-color: #fecdd3;
+}
+.asm-course-remove-btn:hover {
+  background: #fff1f2;
+}
+.asm-course-add-btn {
+  color: var(--green);
+  border-color: #bbf7d0;
+}
+.asm-course-add-btn:hover {
+  background: #f0fdf4;
+}
+.asm-removed-note {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: #b45309;
+  margin-top: 8px;
+  padding: 6px 8px;
+  background: #fffbeb;
+  border-radius: var(--radius);
+}
+
+/* Schedule blocks (lec/lab) */
+.asm-schedule-block {
+  border-radius: var(--radius);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.asm-schedule-lec {
+  background: #eff6ff;
+  border: 0.5px solid #bfdbfe;
+}
+.asm-schedule-lab {
+  background: #f0fdf4;
+  border: 0.5px solid #bbf7d0;
+}
+.asm-schedule-block-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--black);
+}
+.asm-schedule-lec .asm-schedule-block-label {
+  color: #1d4ed8;
+}
+.asm-schedule-lab .asm-schedule-block-label {
+  color: #15803d;
+}
+
+/* Lecture pair buttons */
+.asm-pair-btns {
+  display: flex;
+  gap: 6px;
+}
+.asm-pair-btn {
+  flex: 1;
+  padding: 7px 10px;
+  border: 0.5px solid #bfdbfe;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 600;
+  color: #1d4ed8;
+  background: var(--white);
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s;
+}
+.asm-pair-btn:hover {
+  background: #dbeafe;
+}
+.asm-pair-btn-active {
+  background: #1d4ed8 !important;
+  color: var(--white) !important;
+  border-color: #1d4ed8 !important;
+}
+.asm-pair-days-note {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: #1d4ed8;
+}
+
+/* Review slots */
+.asm-review-slot {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 11px;
+  color: var(--gray-600);
+  padding: 5px 8px;
+  border-radius: var(--radius-sm);
+  flex-wrap: wrap;
+}
+.asm-review-slot-lec {
+  background: #eff6ff;
+}
+.asm-review-slot-lab {
+  background: #f0fdf4;
+}
+.asm-review-slot-label {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 20px;
+  flex-shrink: 0;
+}
+.asm-review-slot-lec .asm-review-slot-label {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+.asm-review-slot-lab .asm-review-slot-label {
+  background: #dcfce7;
+  color: #15803d;
+}
+.asm-review-slot i {
+  font-size: 11px;
+  margin-right: 2px;
+}
+
+/* Schedule type toggle */
+.asm-pair-btn i {
+  font-size: 12px;
+}
+.asm-auto-name {
+  padding: 8px 11px;
+  border: 0.5px solid var(--gray-200);
+  border-radius: var(--radius);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--black);
+  background: var(--gray-50);
+}

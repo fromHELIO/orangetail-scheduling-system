@@ -1,0 +1,523 @@
+/* ── Overlay & modal ─────────────────────────────────────────────────────── */
+.ssm-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.25);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+.ssm-overlay-top {
+  z-index: 10000;
+}
+.ssm-modal {
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  width: 100%;
+  max-width: 860px;
+  max-height: 80vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  border: 0.5px solid var(--gray-200);
+  box-shadow: var(--shadow-lg);
+}
+
+/* ── Header ──────────────────────────────────────────────────────────────── */
+.ssm-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 0.5px solid var(--gray-100);
+  gap: 12px;
+  flex-shrink: 0;
+}
+.ssm-header-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.ssm-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--black);
+  margin-bottom: 2px;
+}
+.ssm-sub {
+  font-size: 12px;
+  color: var(--gray-500);
+}
+.ssm-status-note {
+  font-weight: 600;
+}
+.ssm-status-draft {
+  color: #b45309;
+}
+.ssm-status-approved {
+  color: #15803d;
+}
+.ssm-close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--gray-400);
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  padding: 4px;
+  border-radius: var(--radius-sm);
+  transition: color 0.15s;
+  flex-shrink: 0;
+}
+.ssm-close:hover {
+  color: var(--black);
+}
+.ssm-bulk-delete-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 12px;
+  background: var(--red);
+  color: var(--white);
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: opacity 0.15s;
+}
+.ssm-bulk-delete-btn:hover {
+  opacity: 0.85;
+}
+
+/* ── Body / table ────────────────────────────────────────────────────────── */
+.ssm-body {
+  overflow-y: auto;
+  flex: 1;
+}
+.ssm-empty {
+  text-align: center;
+  font-size: 13px;
+  color: var(--gray-400);
+  padding: 32px;
+}
+.ssm-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+.ssm-table thead tr {
+  background: var(--gray-50);
+  border-bottom: 0.5px solid var(--gray-200);
+}
+.ssm-table th {
+  padding: 8px 12px;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--gray-500);
+  text-align: left;
+  white-space: nowrap;
+}
+.ssm-table td {
+  padding: 10px 12px;
+  border-bottom: 0.5px solid var(--gray-100);
+  vertical-align: middle;
+  color: var(--black);
+}
+.ssm-table tbody tr:last-child td {
+  border-bottom: none;
+}
+.ssm-th-chk,
+.ssm-td-chk {
+  width: 40px;
+  text-align: center;
+  padding: 0 8px !important;
+}
+.ssm-chk {
+  width: 14px;
+  height: 14px;
+  accent-color: var(--black);
+  cursor: pointer;
+}
+
+/* ── Row states ──────────────────────────────────────────────────────────── */
+.ssm-row {
+  cursor: pointer;
+  transition: background 0.1s;
+}
+.ssm-row:hover td {
+  background: var(--gray-50);
+}
+.ssm-row-checked td {
+  background: #f0f9ff !important;
+}
+.ssm-row-preview {
+  opacity: 0.65;
+  cursor: default !important;
+}
+.ssm-row-preview:hover td {
+  background: transparent !important;
+}
+
+/* ── Cell content ────────────────────────────────────────────────────────── */
+.ssm-draft-badge {
+  display: inline-block;
+  padding: 2px 7px;
+  border-radius: 20px;
+  font-size: 9px;
+  font-weight: 700;
+  background: #fef3c7;
+  color: #b45309;
+  white-space: nowrap;
+}
+.ssm-td-code {
+  font-weight: 700;
+  font-size: 12px;
+  color: var(--black);
+  white-space: nowrap;
+}
+.ssm-course-name {
+  font-size: 12px;
+  color: var(--gray-700);
+}
+.ssm-day-time {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+.ssm-day-badge {
+  display: inline-block;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  background: var(--gray-100);
+  color: var(--gray-600);
+  flex-shrink: 0;
+}
+.ssm-time-text {
+  font-size: 11px;
+  color: var(--gray-700);
+}
+.ssm-unassigned {
+  color: var(--gray-400);
+  font-style: italic;
+}
+.ssm-tba {
+  color: var(--gray-400);
+  font-style: italic;
+}
+.ssm-edit-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--gray-400);
+  font-size: 14px;
+  padding: 3px;
+  border-radius: var(--radius-sm);
+  transition: color 0.15s;
+}
+.ssm-edit-btn:hover {
+  color: var(--black);
+}
+
+/* ── Confirm box ─────────────────────────────────────────────────────────── */
+.ssm-confirm-box {
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+  width: 360px;
+  text-align: center;
+  box-shadow: var(--shadow-lg);
+  border: 0.5px solid var(--gray-200);
+}
+.ssm-confirm-icon {
+  font-size: 28px;
+  color: var(--red);
+  margin-bottom: 10px;
+}
+.ssm-confirm-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--black);
+  margin-bottom: 6px;
+}
+.ssm-confirm-msg {
+  font-size: 13px;
+  color: var(--gray-500);
+  margin-bottom: 20px;
+  line-height: 1.5;
+}
+.ssm-confirm-btns {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+.ssm-cancel-btn {
+  padding: 8px 18px;
+  border: 0.5px solid var(--gray-200);
+  border-radius: var(--radius);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--gray-600);
+  background: var(--white);
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s;
+}
+.ssm-cancel-btn:hover {
+  border-color: var(--black);
+  color: var(--black);
+}
+.ssm-delete-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 8px 18px;
+  background: var(--red);
+  color: var(--white);
+  border: none;
+  border-radius: var(--radius);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: opacity 0.15s;
+}
+.ssm-delete-btn:hover {
+  opacity: 0.85;
+}
+
+/* ── Edit modal ──────────────────────────────────────────────────────────── */
+.ssm-edit-modal {
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  width: 100%;
+  max-width: 460px;
+  border: 0.5px solid var(--gray-200);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+}
+.ssm-edit-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 0.5px solid var(--gray-100);
+  gap: 12px;
+}
+.ssm-edit-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--black);
+  margin-bottom: 2px;
+}
+.ssm-edit-sub {
+  font-size: 12px;
+  color: var(--gray-500);
+}
+.ssm-edit-body {
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.ssm-current {
+  padding: 10px 12px;
+  background: var(--gray-50);
+  border-radius: var(--radius);
+  border: 0.5px solid var(--gray-200);
+}
+.ssm-current-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--gray-400);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 6px;
+}
+.ssm-current-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--gray-600);
+}
+.ssm-current-row span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.ssm-edit-error {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 12px;
+  background: #fff1f2;
+  color: var(--red);
+  border-left: 3px solid var(--red);
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+}
+.ssm-edit-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.ssm-edit-field label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--gray-600);
+}
+.ssm-edit-select {
+  width: 100%;
+  padding: 8px 11px;
+  border: 0.5px solid var(--gray-300);
+  border-radius: var(--radius);
+  font-size: 13px;
+  font-family: inherit;
+  color: var(--black);
+  outline: none;
+  background: var(--white);
+  transition: border-color 0.15s;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+.ssm-edit-select:focus {
+  border-color: var(--black);
+}
+.ssm-edit-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--gray-400);
+  line-height: 1.5;
+}
+.ssm-edit-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 14px 20px;
+  border-top: 0.5px solid var(--gray-100);
+}
+.ssm-save-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 18px;
+  background: var(--black);
+  color: var(--white);
+  border: none;
+  border-radius: var(--radius);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.15s;
+}
+.ssm-save-btn:hover {
+  background: #333;
+}
+.ssm-save-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ── Conflict indicators ─────────────────────────────────────────────────── */
+.ssm-conflict-hard {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 10px 12px;
+  background: #fff1f2;
+  border: 0.5px solid #fecdd3;
+  border-radius: var(--radius);
+  color: var(--red);
+  font-size: 12px;
+  line-height: 1.6;
+}
+.ssm-conflict-soft {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 10px 12px;
+  background: #fffbeb;
+  border: 0.5px solid #fde68a;
+  border-radius: var(--radius);
+  color: #b45309;
+  font-size: 12px;
+  line-height: 1.6;
+}
+.ssm-conflict-label {
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+
+/* ── Time wheel ──────────────────────────────────────────────────────────── */
+.ssm-time-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.ssm-day-sel {
+  flex: 1;
+  min-width: 110px;
+}
+.ssm-time-wheel {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  background: var(--white);
+  border: 0.5px solid var(--gray-300);
+  border-radius: var(--radius);
+  padding: 6px 8px;
+}
+.ssm-time-sel {
+  border: none;
+  outline: none;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  color: var(--black);
+  background: transparent;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  text-align: center;
+  width: 42px;
+}
+.ssm-time-sel-min {
+  width: 36px;
+}
+.ssm-time-colon {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--black);
+  user-select: none;
+}
+.ssm-time-sep {
+  font-size: 12px;
+  color: var(--gray-400);
+  flex-shrink: 0;
+}
+
+/* Gen Ed note in edit modal */
+.ssm-gen-ed-note {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 12px;
+  background: #eff6ff;
+  color: #1d4ed8;
+  border-radius: var(--radius);
+  font-size: 12px;
+  border: 0.5px solid #bfdbfe;
+}

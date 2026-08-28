@@ -1,0 +1,215 @@
+.vd-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.25);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+.vd-dialog {
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  width: 100%;
+  max-width: 640px;
+  max-height: 85vh;
+  overflow-y: auto;
+  border: 0.5px solid var(--gray-200);
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  flex-direction: column;
+}
+.vd-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 18px 24px;
+  border-bottom: 0.5px solid var(--gray-100);
+  position: sticky;
+  top: 0;
+  background: var(--white);
+  z-index: 1;
+  flex-shrink: 0;
+}
+.vd-header h2 {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--black);
+}
+.vd-header-sub {
+  font-size: 11px;
+  color: var(--gray-500);
+  margin-top: 2px;
+}
+.vd-close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--gray-400);
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  padding: 4px;
+  border-radius: var(--radius-sm);
+  transition: color 0.15s;
+}
+.vd-close:hover {
+  color: var(--black);
+}
+.vd-body {
+  flex: 1;
+  overflow-y: auto;
+}
+
+/* ── Empty state ──────────────────────────────────────────────────────────── */
+.vd-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+  gap: 10px;
+  color: var(--green);
+  text-align: center;
+}
+.vd-empty i {
+  font-size: 32px;
+}
+.vd-empty p {
+  font-size: 13px;
+  color: var(--gray-500);
+}
+
+/* ── Sections ─────────────────────────────────────────────────────────────── */
+.vd-section {
+  padding: 18px 24px;
+  border-bottom: 0.5px solid var(--gray-100);
+}
+.vd-section:last-child {
+  border-bottom: none;
+}
+.vd-section-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--gray-400);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 12px;
+}
+.vd-findings-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* ── Finding cards ────────────────────────────────────────────────────────── */
+.vd-card {
+  border: 0.5px solid var(--gray-200);
+  border-radius: var(--radius);
+  padding: 12px 14px;
+  background: var(--gray-50);
+}
+.vd-card-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--black);
+  margin-bottom: 4px;
+}
+.vd-card-detail {
+  font-size: 12px;
+  color: var(--gray-600);
+  line-height: 1.5;
+}
+
+/* ── Tags (data gap warning vs informational) ────────────────────────────── */
+.vd-tag {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+  padding: 7px 10px;
+  border-radius: var(--radius-sm);
+  font-size: 11px;
+  line-height: 1.4;
+}
+.vd-tag-gap {
+  background: #fff1f2;
+  color: var(--red);
+}
+.vd-tag-info {
+  background: #eff6ff;
+  color: #1d4ed8;
+}
+
+/* ── Nested detail lists (class schedule, course load) ───────────────────── */
+.vd-detail-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 0.5px solid var(--gray-200);
+}
+.vd-detail-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 11px;
+  color: var(--gray-600);
+}
+.vd-detail-time {
+  font-weight: 600;
+  color: var(--black);
+  flex-shrink: 0;
+}
+
+/* ── Other categories (no drill-down yet, count only) ────────────────────── */
+.vd-other-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.vd-other-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: var(--gray-50);
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  color: var(--gray-600);
+}
+.vd-other-count {
+  font-weight: 700;
+  color: var(--black);
+}
+
+/* ── Footer ───────────────────────────────────────────────────────────────── */
+.vd-footer {
+  display: flex;
+  justify-content: flex-end;
+  padding: 14px 24px;
+  border-top: 0.5px solid var(--gray-100);
+  position: sticky;
+  bottom: 0;
+  background: var(--white);
+  flex-shrink: 0;
+}
+.vd-close-btn {
+  padding: 8px 18px;
+  border: 0.5px solid var(--gray-300);
+  border-radius: var(--radius);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--gray-600);
+  background: var(--white);
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s;
+}
+.vd-close-btn:hover {
+  border-color: var(--black);
+  color: var(--black);
+}

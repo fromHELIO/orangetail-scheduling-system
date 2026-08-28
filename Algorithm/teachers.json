@@ -1,0 +1,481 @@
+[
+  {
+    "teacher_id": "TCH-001",
+    "name": "AGUILAR, KATHRINE S",
+    "ranked_eligible_subjects": [
+      "6CFUN",
+      "6COMPRO1",
+      "6EMCFUN",
+      "6ADVAN2D"
+    ],
+    "date_of_first_appointment": "2018-02-01",
+    "degree": "Bachelor's Degree"
+  },
+  {
+    "teacher_id": "TCH-002",
+    "name": "ALMOCERA, CHRIS .",
+    "ranked_eligible_subjects": [
+      "6COMGRAP",
+      "6ANIMPROD",
+      "6SOPMAN",
+      "6ADSE"
+    ],
+    "date_of_first_appointment": "2021-05-08",
+    "degree": "Master's Degree"
+  },
+  {
+    "teacher_id": "TCH-003",
+    "name": "BULANADI, JEHAN D",
+    "ranked_eligible_subjects": [
+      "6NETFUN",
+      "6ENSA",
+      "6INFOR",
+      "6IASEC"
+    ],
+    "date_of_first_appointment": "2005-03-24",
+    "degree": "Doctorate"
+  },
+  {
+    "teacher_id": "TCH-004",
+    "name": "CABRERA, RAYMOND A",
+    "ranked_eligible_subjects": [
+      "6WEBDEV1",
+      "6ADET",
+      "6CLOUDCOM",
+      "6UHCID"
+    ],
+    "date_of_first_appointment": "2001-11-24",
+    "degree": "Bachelor's Degree"
+  },
+  {
+    "teacher_id": "TCH-005",
+    "name": "CALIMOSO, PAUL ALBERT S",
+    "ranked_eligible_subjects": [
+      "6DSALGO",
+      "6DMS",
+      "6SHWINT",
+      "6ITELEC"
+    ],
+    "date_of_first_appointment": "2015-02-19",
+    "degree": "Master's Degree"
+  },
+  {
+    "teacher_id": "TCH-006",
+    "name": "CAMILING, TIMOTHY JAMES S",
+    "ranked_eligible_subjects": [
+      "6CSEC",
+      "6ETHHACK",
+      "6CYBDEF"
+    ],
+    "date_of_first_appointment": "2011-01-01",
+    "degree": "Doctorate"
+  },
+  {
+    "teacher_id": "TCH-007",
+    "name": "CAPIL, MAYNARD I",
+    "ranked_eligible_subjects": [
+      "6CFUN",
+      "6EMCFUN",
+      "6NETFUN",
+      "6WEBDEV1",
+      "6DSALGO"
+    ],
+    "date_of_first_appointment": "2000-04-08",
+    "degree": "Bachelor's Degree"
+  },
+  {
+    "teacher_id": "TCH-008",
+    "name": "CARO, CARISMA A",
+    "ranked_eligible_subjects": [
+      "6COMPRO1",
+      "6ADVAN2D",
+      "6NETFUN",
+      "6WEBDEV1",
+      "6DSALGO",
+      "6DMS"
+    ],
+    "date_of_first_appointment": "2014-10-01",
+    "degree": "Master's Degree"
+  },
+  {
+    "teacher_id": "TCH-009",
+    "name": "CASINGAL, JOHN REY D",
+    "ranked_eligible_subjects": [
+      "6CSEC",
+      "6ANIMPROD",
+      "6SOPMAN",
+      "6ENSA",
+      "6INFOR",
+      "6ADET",
+      "6CLOUDCOM",
+      "6SHWINT"
+    ],
+    "date_of_first_appointment": "2015-04-23",
+    "degree": "Doctorate"
+  },
+  {
+    "teacher_id": "TCH-010",
+    "name": "CHUA, EVERLY M",
+    "ranked_eligible_subjects": [
+      "6CFUN",
+      "6COMPRO1",
+      "6ADSE",
+      "6IASEC",
+      "6UHCID"
+    ],
+    "date_of_first_appointment": "2018-12-18",
+    "degree": "Bachelor's Degree"
+  },
+  {
+    "teacher_id": "TCH-011",
+    "name": "CONCEPCION, WILSON D",
+    "ranked_eligible_subjects": [
+      "6CYBDEF",
+      "6ANIMPROD",
+      "6ENSA",
+      "6ADET"
+    ],
+    "date_of_first_appointment": "2011-04-15",
+    "degree": "Master's Degree"
+  },
+  {
+    "teacher_id": "TCH-012",
+    "name": "DAVID, MARYEN Z",
+    "ranked_eligible_subjects": [
+      "6ITELEC",
+      "6COMGRAP",
+      "6NETFUN",
+      "6WEBDEV1",
+      "6CSEC"
+    ],
+    "date_of_first_appointment": "2016-05-26",
+    "degree": "Doctorate"
+  },
+  {
+    "teacher_id": "TCH-013",
+    "name": "DE GUZMAN, BERNARD S",
+    "ranked_eligible_subjects": [
+      "6CFUN",
+      "6EMCFUN",
+      "6ADVAN2D",
+      "6COMGRAP",
+      "6ANIMPROD"
+    ],
+    "date_of_first_appointment": "1998-03-23",
+    "degree": "Bachelor's Degree"
+  },
+  {
+    "teacher_id": "TCH-014",
+    "name": "ELICA, JOVENCIO M",
+    "ranked_eligible_subjects": [
+      "6COMPRO1",
+      "6ADVAN2D",
+      "6COMGRAP",
+      "6ANIMPROD",
+      "6SOPMAN",
+      "6ADSE"
+    ],
+    "date_of_first_appointment": "2011-06-09",
+    "degree": "Master's Degree"
+  },
+  {
+    "teacher_id": "TCH-015",
+    "name": "ESCOBER, LOREN JEAN D",
+    "ranked_eligible_subjects": [
+      "6NETFUN",
+      "6ENSA",
+      "6INFOR",
+      "6IASEC"
+    ],
+    "date_of_first_appointment": "2002-04-25",
+    "degree": "Doctorate"
+  },
+  {
+    "teacher_id": "TCH-016",
+    "name": "ESPINOSA, KEVIN ALDRIN G",
+    "ranked_eligible_subjects": [
+      "6WEBDEV1",
+      "6ADET",
+      "6CLOUDCOM",
+      "6UHCID"
+    ],
+    "date_of_first_appointment": "2008-02-03",
+    "degree": "Bachelor's Degree"
+  },
+  {
+    "teacher_id": "TCH-017",
+    "name": "ESQUIVEL, JOSEPH A",
+    "ranked_eligible_subjects": [
+      "6DSALGO",
+      "6DMS",
+      "6SHWINT",
+      "6ITELEC"
+    ],
+    "date_of_first_appointment": "2010-02-12",
+    "degree": "Master's Degree"
+  },
+  {
+    "teacher_id": "TCH-018",
+    "name": "FLORES, EVICEN C",
+    "ranked_eligible_subjects": [
+      "6CSEC",
+      "6ETHHACK",
+      "6CYBDEF"
+    ],
+    "date_of_first_appointment": "2009-10-09",
+    "degree": "Doctorate"
+  },
+  {
+    "teacher_id": "TCH-019",
+    "name": "GUECO, JESSE EDWIN V",
+    "ranked_eligible_subjects": [
+      "6CFUN",
+      "6COMPRO1",
+      "6EMCFUN",
+      "6ADVAN2D"
+    ],
+    "date_of_first_appointment": "2023-01-24",
+    "degree": "Bachelor's Degree"
+  },
+  {
+    "teacher_id": "TCH-020",
+    "name": "LAGUNA, RENE JR. D",
+    "ranked_eligible_subjects": [
+      "6ADVAN2D",
+      "6COMGRAP",
+      "6ANIMPROD",
+      "6SOPMAN"
+    ],
+    "date_of_first_appointment": "2012-09-04",
+    "degree": "Master's Degree"
+  },
+  {
+    "teacher_id": "TCH-021",
+    "name": "MABABA, JONILO C",
+    "ranked_eligible_subjects": [
+      "6ADSE",
+      "6NETFUN",
+      "6ENSA",
+      "6INFOR"
+    ],
+    "date_of_first_appointment": "2010-02-18",
+    "degree": "Doctorate"
+  },
+  {
+    "teacher_id": "TCH-022",
+    "name": "MAGBAG, AVIGAIL P",
+    "ranked_eligible_subjects": [
+      "6IASEC",
+      "6WEBDEV1",
+      "6ADET",
+      "6CLOUDCOM"
+    ],
+    "date_of_first_appointment": "2007-11-20",
+    "degree": "Bachelor's Degree"
+  },
+  {
+    "teacher_id": "TCH-023",
+    "name": "MAGCALAS, ADRIAN LEE G",
+    "ranked_eligible_subjects": [
+      "6UHCID",
+      "6DSALGO",
+      "6DMS",
+      "6SHWINT",
+      "6ITELEC"
+    ],
+    "date_of_first_appointment": "2009-10-07",
+    "degree": "Master's Degree"
+  },
+  {
+    "teacher_id": "TCH-024",
+    "name": "MANALOTO, ALMA THERESA D",
+    "ranked_eligible_subjects": [
+      "6CSEC",
+      "6ETHHACK"
+    ],
+    "date_of_first_appointment": "2020-02-02",
+    "degree": "Doctorate"
+  },
+  {
+    "teacher_id": "TCH-025",
+    "name": "MENDEZ, JEANKY S",
+    "ranked_eligible_subjects": [
+      "6CYBDEF",
+      "6CFUN",
+      "6COMPRO1",
+      "6EMCFUN"
+    ],
+    "date_of_first_appointment": "2019-04-25",
+    "degree": "Bachelor's Degree"
+  },
+  {
+    "teacher_id": "TCH-026",
+    "name": "MONSALE, ULYSSES RAYMOND F",
+    "ranked_eligible_subjects": [
+      "6ADVAN2D",
+      "6COMGRAP",
+      "6ANIMPROD"
+    ],
+    "date_of_first_appointment": "2007-02-28",
+    "degree": "Master's Degree"
+  },
+  {
+    "teacher_id": "TCH-027",
+    "name": "NAPALIT, ARCELY P",
+    "ranked_eligible_subjects": [
+      "6ANIMPROD",
+      "6SOPMAN",
+      "6ADSE",
+      "6NETFUN",
+      "6ENSA"
+    ],
+    "date_of_first_appointment": "2005-02-13",
+    "degree": "Doctorate"
+  },
+  {
+    "teacher_id": "TCH-028",
+    "name": "NAPALIT, FRANCISCO D",
+    "ranked_eligible_subjects": [
+      "6ENSA",
+      "6INFOR",
+      "6IASEC",
+      "6WEBDEV1",
+      "6ADET"
+    ],
+    "date_of_first_appointment": "2006-08-21",
+    "degree": "Bachelor's Degree"
+  },
+  {
+    "teacher_id": "TCH-029",
+    "name": "PINEDA, MARK GIL J",
+    "ranked_eligible_subjects": [
+      "6ADET",
+      "6CLOUDCOM",
+      "6UHCID",
+      "6DSALGO",
+      "6DMS",
+      "6SHWINT"
+    ],
+    "date_of_first_appointment": "2009-03-12",
+    "degree": "Master's Degree"
+  },
+  {
+    "teacher_id": "TCH-030",
+    "name": "RABENA, MARY JANE C",
+    "ranked_eligible_subjects": [
+      "6ITELEC",
+      "6CSEC",
+      "6ETHHACK"
+    ],
+    "date_of_first_appointment": "2009-04-22",
+    "degree": "Doctorate"
+  },
+  {
+    "teacher_id": "TCH-031",
+    "name": "REYES, RENZ AMIEL M",
+    "ranked_eligible_subjects": [
+      "6ETHHACK",
+      "6CYBDEF",
+      "6CFUN",
+      "6COMPRO1"
+    ],
+    "date_of_first_appointment": "2006-12-22",
+    "degree": "Bachelor's Degree"
+  },
+  {
+    "teacher_id": "TCH-032",
+    "name": "RIVERA, RAQUEL B",
+    "ranked_eligible_subjects": [
+      "6EMCFUN",
+      "6ADVAN2D",
+      "6COMGRAP"
+    ],
+    "date_of_first_appointment": "2018-02-20",
+    "degree": "Master's Degree"
+  },
+  {
+    "teacher_id": "TCH-033",
+    "name": "ROMERO, WILFREDO M",
+    "ranked_eligible_subjects": [
+      "6ANIMPROD",
+      "6SOPMAN",
+      "6ADSE",
+      "6NETFUN"
+    ],
+    "date_of_first_appointment": "2018-03-18",
+    "degree": "Doctorate"
+  },
+  {
+    "teacher_id": "TCH-034",
+    "name": "SALENGA, MA. LOUELLA M",
+    "ranked_eligible_subjects": [
+      "6ENSA",
+      "6INFOR",
+      "6IASEC",
+      "6WEBDEV1"
+    ],
+    "date_of_first_appointment": "2021-04-06",
+    "degree": "Bachelor's Degree"
+  },
+  {
+    "teacher_id": "TCH-035",
+    "name": "SANGUYU, JOCELON C",
+    "ranked_eligible_subjects": [
+      "6ADET",
+      "6CLOUDCOM",
+      "6UHCID",
+      "6DSALGO",
+      "6DMS"
+    ],
+    "date_of_first_appointment": "2012-07-09",
+    "degree": "Master's Degree"
+  },
+  {
+    "teacher_id": "TCH-036",
+    "name": "STOLK, TJAKOEN A",
+    "ranked_eligible_subjects": [
+      "6SHWINT",
+      "6ITELEC",
+      "6CSEC"
+    ],
+    "date_of_first_appointment": "2018-12-18",
+    "degree": "Doctorate"
+  },
+  {
+    "teacher_id": "TCH-037",
+    "name": "TAYAG, MARLON I",
+    "ranked_eligible_subjects": [
+      "6ETHHACK",
+      "6CYBDEF",
+      "6CFUN",
+      "6COMPRO1"
+    ],
+    "date_of_first_appointment": "2005-11-11",
+    "degree": "Bachelor's Degree"
+  },
+  {
+    "teacher_id": "TCH-038",
+    "name": "TIBAY, JONA P",
+    "ranked_eligible_subjects": [
+      "6COMPRO1",
+      "6EMCFUN",
+      "6ADVAN2D",
+      "6COMGRAP"
+    ],
+    "date_of_first_appointment": "2022-01-08",
+    "degree": "Master's Degree"
+  },
+  {
+    "teacher_id": "TCH-039",
+    "name": "YU, KAHIL MAKISIG I",
+    "ranked_eligible_subjects": [
+      "6COMGRAP",
+      "6ANIMPROD",
+      "6SOPMAN",
+      "6ADSE",
+      "6NETFUN"
+    ],
+    "date_of_first_appointment": "1999-06-13",
+    "degree": "Doctorate"
+  }
+]

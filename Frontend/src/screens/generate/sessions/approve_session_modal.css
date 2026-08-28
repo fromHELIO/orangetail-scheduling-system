@@ -1,0 +1,315 @@
+.apm-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.25);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+/* ── Preview modal ── */
+.apm-preview-modal {
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  width: 100%;
+  max-width: 860px;
+  height: 80vh;
+  display: flex;
+  flex-direction: column;
+  border: 0.5px solid var(--gray-200);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+}
+
+.apm-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  border-bottom: 0.5px solid var(--gray-100);
+  flex-shrink: 0;
+  gap: 12px;
+}
+.apm-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--black);
+  margin-bottom: 2px;
+}
+.apm-sub {
+  font-size: 12px;
+  color: var(--gray-500);
+}
+.apm-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+/* ── Split layout ── */
+.apm-split {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* Left section list */
+.apm-section-list {
+  width: 200px;
+  flex-shrink: 0;
+  border-right: 0.5px solid var(--gray-100);
+  overflow-y: auto;
+  background: var(--gray-50);
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.apm-list-curriculum {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.apm-list-curr-label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--gray-400);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 8px 6px 4px;
+}
+.apm-list-curr-label i {
+  font-size: 12px;
+}
+.apm-list-yr-group {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  margin-bottom: 4px;
+}
+.apm-list-yr-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--gray-400);
+  padding: 4px 8px 2px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.apm-list-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 7px 10px;
+  border-radius: var(--radius);
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 12px;
+  color: var(--gray-700);
+  text-align: left;
+  transition: background 0.12s;
+}
+.apm-list-item:hover {
+  background: var(--gray-100);
+}
+.apm-list-item-active {
+  background: var(--black) !important;
+  color: var(--white) !important;
+}
+.apm-list-item-name {
+  font-weight: 500;
+}
+.apm-list-item-count {
+  font-size: 10px;
+  color: var(--gray-400);
+  flex-shrink: 0;
+}
+.apm-list-item-active .apm-list-item-count {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* Right table panel */
+.apm-table-panel {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.apm-table-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 11px 16px;
+  border-bottom: 0.5px solid var(--gray-100);
+  flex-shrink: 0;
+  background: var(--white);
+}
+.apm-table-header-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--black);
+}
+.apm-table-header-count {
+  font-size: 11px;
+  color: var(--gray-400);
+}
+.apm-table-scroll {
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0;
+}
+.apm-table-empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: var(--gray-300);
+}
+.apm-table-empty i {
+  font-size: 32px;
+}
+.apm-table-empty p {
+  font-size: 13px;
+  color: var(--gray-400);
+}
+
+/* Table */
+.apm-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+.apm-table th {
+  padding: 7px 12px;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--gray-500);
+  background: var(--gray-50);
+  border-bottom: 0.5px solid var(--gray-200);
+  text-align: left;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+.apm-table td {
+  padding: 8px 12px;
+  border-bottom: 0.5px solid var(--gray-100);
+  color: var(--black);
+  vertical-align: middle;
+}
+.apm-table tr:last-child td {
+  border-bottom: none;
+}
+.apm-table tr:hover td {
+  background: var(--gray-50);
+}
+.apm-course-code {
+  font-weight: 700;
+  font-size: 11px;
+}
+.apm-course-name {
+  font-size: 10px;
+  color: var(--gray-500);
+  margin-top: 1px;
+}
+.apm-unassigned {
+  color: var(--gray-400);
+  font-style: italic;
+}
+.apm-tba {
+  color: var(--gray-400);
+  font-style: italic;
+}
+.apm-day-badge {
+  display: inline-block;
+  padding: 2px 7px;
+  border-radius: 20px;
+  font-size: 10px;
+  font-weight: 700;
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+.apm-time {
+  white-space: nowrap;
+}
+
+/* ── Confirm box ── */
+.apm-confirm-box {
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+  width: 360px;
+  text-align: center;
+  box-shadow: var(--shadow-lg);
+  border: 0.5px solid var(--gray-200);
+}
+.apm-confirm-icon {
+  font-size: 32px;
+  color: var(--green);
+  margin-bottom: 10px;
+}
+.apm-confirm-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--black);
+  margin-bottom: 6px;
+}
+.apm-confirm-msg {
+  font-size: 13px;
+  color: var(--gray-500);
+  margin-bottom: 20px;
+  line-height: 1.5;
+}
+.apm-confirm-btns {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+/* ── Shared buttons ── */
+.apm-cancel-btn {
+  padding: 7px 18px;
+  border: 0.5px solid var(--gray-200);
+  border-radius: var(--radius);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--gray-600);
+  background: var(--white);
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s;
+}
+.apm-cancel-btn:hover {
+  border-color: var(--black);
+  color: var(--black);
+}
+.apm-approve-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 7px 18px;
+  background: var(--green);
+  color: var(--white);
+  border: none;
+  border-radius: var(--radius);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: opacity 0.15s;
+}
+.apm-approve-btn:hover {
+  opacity: 0.85;
+}

@@ -1,0 +1,179 @@
+.rmod-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.25);
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+.rmod-modal {
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  width: 100%;
+  max-width: 480px;
+  border: 0.5px solid var(--gray-200);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+}
+.rmod-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 0.5px solid var(--gray-100);
+}
+.rmod-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--black);
+}
+.rmod-close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--gray-400);
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  padding: 4px;
+  border-radius: var(--radius-sm);
+  transition: color 0.15s;
+}
+.rmod-close:hover {
+  color: var(--black);
+}
+.rmod-body {
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.rmod-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.rmod-field label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--gray-600);
+}
+.rmod-input,
+.rmod-select {
+  width: 100%;
+  padding: 8px 11px;
+  border: 0.5px solid var(--gray-300);
+  border-radius: var(--radius);
+  font-size: 13px;
+  font-family: inherit;
+  color: var(--black);
+  outline: none;
+  background: var(--white);
+  transition: border-color 0.15s;
+  box-sizing: border-box;
+}
+.rmod-input:focus,
+.rmod-select:focus {
+  border-color: var(--black);
+}
+.rmod-input::placeholder {
+  color: var(--gray-400);
+}
+.rmod-select {
+  cursor: pointer;
+}
+.rmod-row2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.rmod-req {
+  color: var(--red);
+}
+.rmod-toggle-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--black);
+  cursor: pointer;
+}
+.rmod-toggle-chk {
+  width: 14px;
+  height: 14px;
+  accent-color: var(--black);
+  cursor: pointer;
+  margin: 0;
+}
+.rmod-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  border-top: 0.5px solid var(--gray-100);
+}
+.rmod-footer-right {
+  display: flex;
+  gap: 8px;
+  margin-left: auto;
+}
+.rmod-delete-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 7px 14px;
+  border: 0.5px solid var(--gray-200);
+  border-radius: var(--radius);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--gray-500);
+  background: var(--white);
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s;
+}
+.rmod-delete-btn:hover {
+  border-color: var(--red);
+  color: var(--red);
+  background: #fff1f2;
+}
+.rmod-cancel-btn {
+  padding: 8px 16px;
+  border: 0.5px solid var(--gray-200);
+  border-radius: var(--radius);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--gray-600);
+  background: var(--white);
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s;
+}
+.rmod-cancel-btn:hover {
+  border-color: var(--black);
+  color: var(--black);
+}
+.rmod-save-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 18px;
+  background: var(--black);
+  color: var(--white);
+  border: none;
+  border-radius: var(--radius);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: opacity 0.15s;
+}
+.rmod-save-btn:hover:not(:disabled) {
+  opacity: 0.85;
+}
+.rmod-save-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}

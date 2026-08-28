@@ -1,0 +1,30 @@
+[
+  {"block_id": "BSCS-1A", "program": "BSCS", "year_level": 1, "semester": 1, "curriculum_id": "CURR-BSCS-2024", "school_year": "2026-2027"},
+  {"block_id": "BSCS-1B", "program": "BSCS", "year_level": 1, "semester": 1, "curriculum_id": "CURR-BSCS-2024", "school_year": "2026-2027"},
+  {"block_id": "BSCS-2A", "program": "BSCS", "year_level": 2, "semester": 1, "curriculum_id": "CURR-BSCS-2024", "school_year": "2026-2027"},
+  {"block_id": "BSCS-2B", "program": "BSCS", "year_level": 2, "semester": 1, "curriculum_id": "CURR-BSCS-2024", "school_year": "2026-2027"},
+  {"block_id": "BSCS-3A", "program": "BSCS", "year_level": 3, "semester": 1, "curriculum_id": "CURR-BSCS-2024", "school_year": "2026-2027"},
+
+  {"block_id": "NET-2A", "program": "BSITNET", "year_level": 2, "semester": 1, "curriculum_id": "CURR-BSITNET-2024", "school_year": "2026-2027"},
+  {"block_id": "NET-3A", "program": "BSITNET", "year_level": 3, "semester": 1, "curriculum_id": "CURR-BSITNET-2024", "school_year": "2026-2027"},
+  {"block_id": "NET-3B", "program": "BSITNET", "year_level": 3, "semester": 1, "curriculum_id": "CURR-BSITNET-2024", "school_year": "2026-2027"},
+  {"block_id": "NET-4A", "program": "BSITNET", "year_level": 4, "semester": 1, "curriculum_id": "CURR-BSITNET-2024", "school_year": "2026-2027"},
+
+  {"block_id": "CYB-2A", "program": "BSCYB", "year_level": 2, "semester": 1, "curriculum_id": "CURR-BSCYB-2024", "school_year": "2026-2027"},
+  {"block_id": "CYB-3A", "program": "BSCYB", "year_level": 3, "semester": 1, "curriculum_id": "CURR-BSCYB-2024", "school_year": "2026-2027"},
+  {"block_id": "CYB-4A", "program": "BSCYB", "year_level": 4, "semester": 1, "curriculum_id": "CURR-BSCYB-2024", "school_year": "2026-2027"},
+
+  {"block_id": "EMC-1A", "program": "BSEMC", "year_level": 1, "semester": 1, "curriculum_id": "CURR-BSEMC-2024", "school_year": "2026-2027"},
+  {"block_id": "EMC-1B", "program": "BSEMC", "year_level": 1, "semester": 1, "curriculum_id": "CURR-BSEMC-2024", "school_year": "2026-2027"},
+  {"block_id": "EMC-2A", "program": "BSEMC", "year_level": 2, "semester": 1, "curriculum_id": "CURR-BSEMC-2024", "school_year": "2026-2027"},
+  {"block_id": "EMC-2B", "program": "BSEMC", "year_level": 2, "semester": 1, "curriculum_id": "CURR-BSEMC-2024", "school_year": "2026-2027"},
+  {"block_id": "EMC-3A", "program": "BSEMC", "year_level": 3, "semester": 1, "curriculum_id": "CURR-BSEMC-2024", "school_year": "2026-2027"},
+  {"block_id": "EMC-3B", "program": "BSEMC", "year_level": 3, "semester": 1, "curriculum_id": "CURR-BSEMC-2024", "school_year": "2026-2027"},
+  {"block_id": "EMC-4A", "program": "BSEMC", "year_level": 4, "semester": 1, "curriculum_id": "CURR-BSEMC-2024", "school_year": "2026-2027"},
+
+  {"block_id": "WD-2A", "program": "BSITWD", "year_level": 2, "semester": 1, "curriculum_id": "CURR-BSITWD-2024", "school_year": "2026-2027"},
+  {"block_id": "WD-2B", "program": "BSITWD", "year_level": 2, "semester": 1, "curriculum_id": "CURR-BSITWD-2024", "school_year": "2026-2027"},
+  {"block_id": "WD-3A", "program": "BSITWD", "year_level": 3, "semester": 1, "curriculum_id": "CURR-BSITWD-2024", "school_year": "2026-2027"},
+  {"block_id": "WD-3B", "program": "BSITWD", "year_level": 3, "semester": 1, "curriculum_id": "CURR-BSITWD-2024", "school_year": "2026-2027"},
+  {"block_id": "WD-4A", "program": "BSITWD", "year_level": 4, "semester": 1, "curriculum_id": "CURR-BSITWD-2024", "school_year": "2026-2027"}
+]

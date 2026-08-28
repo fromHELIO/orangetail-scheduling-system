@@ -1,0 +1,114 @@
+.login-wrapper {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--gray-50);
+  padding: 24px;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 380px;
+  background: var(--white);
+  border: 0.5px solid var(--gray-200);
+  border-radius: 20px;
+  padding: 48px 36px 36px;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.1);
+}
+
+/* Brand */
+.login-brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.login-logo {
+  width: 110px;
+  height: 110px;
+  object-fit: contain;
+  display: block;
+}
+
+/* Error */
+.login-error {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  background: var(--red-light);
+  color: var(--red);
+  border-left: 3px solid var(--red);
+  border-radius: var(--radius-sm);
+  padding: 9px 12px;
+  font-size: 12px;
+  margin-bottom: 14px;
+}
+
+/* Field */
+.login-field {
+  margin-bottom: 14px;
+}
+
+.login-field label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--gray-600);
+  margin-bottom: 6px;
+  letter-spacing: 0.01em;
+}
+
+.login-field input {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius);
+  font-size: 13px;
+  font-family: inherit;
+  color: var(--black);
+  outline: none;
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s;
+  background: var(--gray-50);
+}
+
+.login-field input:focus {
+  border-color: var(--black);
+  background: var(--white);
+  box-shadow: 0 0 0 3px rgba(26, 26, 24, 0.06);
+}
+
+.login-field input::placeholder {
+  color: var(--gray-300);
+}
+
+/* Submit */
+.login-submit-btn {
+  width: 100%;
+  padding: 11px;
+  margin-top: 8px;
+  background: var(--black);
+  color: var(--white);
+  border: none;
+  border-radius: var(--radius);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  letter-spacing: 0.02em;
+  transition:
+    background 0.15s,
+    opacity 0.15s;
+}
+
+.login-submit-btn:hover:not(:disabled) {
+  background: #333;
+}
+
+.login-submit-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}

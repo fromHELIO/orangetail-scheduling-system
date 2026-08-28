@@ -1,0 +1,29 @@
+[
+  {"curriculum_id": "CURR-BSCS-2024", "program": "BSCS", "year_level": 1, "semester": 1, "subjcode": "6CFUN",    "subjtitle": "Computing Fundamentals",           "units": 3, "schedtype": "LEC",   "lab_cat": "NONE"},
+  {"curriculum_id": "CURR-BSCS-2024", "program": "BSCS", "year_level": 1, "semester": 1, "subjcode": "6COMPRO1", "subjtitle": "Computer Programming 1",             "units": 3, "schedtype": "SPLIT", "lab_cat": "COMPUTER"},
+  {"curriculum_id": "CURR-BSCS-2024", "program": "BSCS", "year_level": 2, "semester": 1, "subjcode": "6DMS",     "subjtitle": "Discrete Mathematics and Structures", "units": 3, "schedtype": "LEC",   "lab_cat": "NONE"},
+  {"curriculum_id": "CURR-BSCS-2024", "program": "BSCS", "year_level": 2, "semester": 1, "subjcode": "6DSALGO",  "subjtitle": "Data Structures and Algorithms",     "units": 3, "schedtype": "SPLIT", "lab_cat": "COMPUTER"},
+  {"curriculum_id": "CURR-BSCS-2024", "program": "BSCS", "year_level": 3, "semester": 1, "subjcode": "6SHWINT",  "subjtitle": "Software and Hardware Interfacing",  "units": 3, "schedtype": "SPLIT", "lab_cat": "COMPUTER"},
+  {"curriculum_id": "CURR-BSCS-2024", "program": "BSCS", "year_level": 3, "semester": 1, "subjcode": "6ITELEC",  "subjtitle": "IT Elective Laboratory",             "units": 3, "schedtype": "LAB"},
+
+  {"curriculum_id": "CURR-BSITNET-2024", "program": "BSITNET", "year_level": 2, "semester": 1, "subjcode": "6NETFUN", "subjtitle": "Networking Fundamentals",                          "units": 3, "schedtype": "SPLIT", "lab_cat": "COMPUTER"},
+  {"curriculum_id": "CURR-BSITNET-2024", "program": "BSITNET", "year_level": 3, "semester": 1, "subjcode": "6ENSA",   "subjtitle": "Enterprise Networking, Security, and Automation", "units": 3, "schedtype": "SPLIT", "lab_cat": "CISCO"},
+  {"curriculum_id": "CURR-BSITNET-2024", "program": "BSITNET", "year_level": 3, "semester": 1, "subjcode": "6INFOR",  "subjtitle": "Introduction to Network Forensics",               "units": 3, "schedtype": "SPLIT", "lab_cat": "CISCO"},
+  {"curriculum_id": "CURR-BSITNET-2024", "program": "BSITNET", "year_level": 4, "semester": 1, "subjcode": "6IASEC",  "subjtitle": "Information Assurance and Security",              "units": 3, "schedtype": "SPLIT", "lab_cat": "CISCO"},
+
+  {"curriculum_id": "CURR-BSCYB-2024", "program": "BSCYB", "year_level": 2, "semester": 1, "subjcode": "6CSEC",    "subjtitle": "Cybersecurity Fundamentals",              "units": 3, "schedtype": "SPLIT", "lab_cat": "COMPUTER"},
+  {"curriculum_id": "CURR-BSCYB-2024", "program": "BSCYB", "year_level": 3, "semester": 1, "subjcode": "6ETHHACK", "subjtitle": "Ethical Hacking and Penetration Testing", "units": 3, "schedtype": "SPLIT", "lab_cat": "CISCO"},
+  {"curriculum_id": "CURR-BSCYB-2024", "program": "BSCYB", "year_level": 4, "semester": 1, "subjcode": "6CYBDEF",  "subjtitle": "Cyber Defense and Incident Response",     "units": 3, "schedtype": "LEC",   "lab_cat": "NONE"},
+
+  {"curriculum_id": "CURR-BSEMC-2024", "program": "BSEMC", "year_level": 1, "semester": 1, "subjcode": "6EMCFUN",   "subjtitle": "Introduction to Entertainment and Multimedia Computing", "units": 3, "schedtype": "LEC",   "lab_cat": "NONE"},
+  {"curriculum_id": "CURR-BSEMC-2024", "program": "BSEMC", "year_level": 2, "semester": 1, "subjcode": "6ADVAN2D",  "subjtitle": "Advanced 2D Animation",                                  "units": 3, "schedtype": "SPLIT", "lab_cat": "MULTIMEDIA"},
+  {"curriculum_id": "CURR-BSEMC-2024", "program": "BSEMC", "year_level": 2, "semester": 1, "subjcode": "6COMGRAP",  "subjtitle": "Computer Graphics Programming",                          "units": 3, "schedtype": "SPLIT", "lab_cat": "MULTIMEDIA"},
+  {"curriculum_id": "CURR-BSEMC-2024", "program": "BSEMC", "year_level": 3, "semester": 1, "subjcode": "6ANIMPROD", "subjtitle": "Animation Design and Production",                        "units": 3, "schedtype": "SPLIT", "lab_cat": "MULTIMEDIA"},
+  {"curriculum_id": "CURR-BSEMC-2024", "program": "BSEMC", "year_level": 3, "semester": 1, "subjcode": "6SOPMAN",   "subjtitle": "Sound Production Management",                            "units": 3, "schedtype": "SPLIT", "lab_cat": "FOLEY"},
+  {"curriculum_id": "CURR-BSEMC-2024", "program": "BSEMC", "year_level": 4, "semester": 1, "subjcode": "6ADSE",     "subjtitle": "Audio Design and Sound Engineering",                     "units": 3, "schedtype": "SPLIT", "lab_cat": "FOLEY"},
+
+  {"curriculum_id": "CURR-BSITWD-2024", "program": "BSITWD", "year_level": 2, "semester": 1, "subjcode": "6WEBDEV1",  "subjtitle": "Web Development 1",                            "units": 3, "schedtype": "SPLIT", "lab_cat": "COMPUTER"},
+  {"curriculum_id": "CURR-BSITWD-2024", "program": "BSITWD", "year_level": 3, "semester": 1, "subjcode": "6ADET",     "subjtitle": "Applications Development and Emerging Technologies", "units": 3, "schedtype": "SPLIT", "lab_cat": "COMPUTER"},
+  {"curriculum_id": "CURR-BSITWD-2024", "program": "BSITWD", "year_level": 3, "semester": 1, "subjcode": "6CLOUDCOM", "subjtitle": "Cloud Computing",                              "units": 3, "schedtype": "SPLIT", "lab_cat": "COMPUTER"},
+  {"curriculum_id": "CURR-BSITWD-2024", "program": "BSITWD", "year_level": 4, "semester": 1, "subjcode": "6UHCID",    "subjtitle": "Usability, HCI and User Interaction Design",   "units": 3, "schedtype": "LEC",   "lab_cat": "NONE"}
+]

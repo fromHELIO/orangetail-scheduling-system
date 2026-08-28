@@ -1,0 +1,493 @@
+.pmod-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.25);
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.pmod-box {
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  width: 100%;
+  max-width: 640px;
+  max-height: 90vh;
+  overflow-y: auto;
+  border: 0.5px solid var(--gray-200);
+  box-shadow: var(--shadow-lg);
+}
+
+/* Header */
+.pmod-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 24px;
+  position: sticky;
+  top: 0;
+  background: var(--white);
+  z-index: 1;
+  border-bottom: 0.5px solid var(--gray-100);
+}
+
+.pmod-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--black);
+}
+
+.pmod-close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--gray-400);
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  padding: 4px;
+  border-radius: var(--radius-sm);
+  transition: color 0.15s;
+}
+.pmod-close:hover {
+  color: var(--black);
+}
+
+/* Body */
+.pmod-body {
+  padding: 0;
+}
+
+.pmod-section {
+  padding: 16px 24px;
+  border-bottom: 0.5px solid var(--gray-100);
+}
+.pmod-section:last-of-type {
+  border-bottom: none;
+}
+
+.pmod-section-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--gray-400);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 12px;
+}
+
+/* Fields */
+.pmod-field {
+  margin-bottom: 12px;
+}
+.pmod-field:last-child {
+  margin-bottom: 0;
+}
+.pmod-field-half {
+  max-width: 50%;
+}
+
+.pmod-field label {
+  display: block;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--gray-600);
+  margin-bottom: 5px;
+}
+
+.pmod-input,
+.pmod-select {
+  width: 100%;
+  padding: 8px 11px;
+  border: 0.5px solid var(--gray-300);
+  border-radius: var(--radius);
+  font-size: 13px;
+  font-family: inherit;
+  color: var(--black);
+  outline: none;
+  background: var(--white);
+  transition: border-color 0.15s;
+  box-sizing: border-box;
+}
+.pmod-input:focus,
+.pmod-select:focus {
+  border-color: var(--black);
+}
+.pmod-input::placeholder {
+  color: var(--gray-400);
+}
+.pmod-select {
+  cursor: pointer;
+}
+
+.pmod-req {
+  color: var(--red);
+}
+.pmod-optional {
+  font-size: 10px;
+  font-weight: 400;
+  color: var(--gray-400);
+  margin-left: 4px;
+}
+.pmod-optional-label {
+  font-size: 10px;
+  color: var(--gray-400);
+  font-weight: 400;
+  margin-left: 4px;
+}
+
+.pmod-age-hint {
+  font-size: 11px;
+  color: var(--gray-400);
+  margin-top: 5px;
+}
+
+/* Grid layouts */
+.pmod-row2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.pmod-row3 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 12px;
+}
+
+/* ETU Stepper */
+.pmod-stepper {
+  display: flex;
+  align-items: center;
+  border: 0.5px solid var(--gray-300);
+  border-radius: var(--radius);
+  overflow: hidden;
+  width: fit-content;
+}
+.pmod-step-btn {
+  width: 34px;
+  height: 36px;
+  background: var(--gray-50);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  color: var(--gray-600);
+  transition: background 0.15s;
+}
+.pmod-step-btn:hover {
+  background: var(--gray-100);
+  color: var(--black);
+}
+.pmod-step-input {
+  width: 60px;
+  border: none !important;
+  border-left: 0.5px solid var(--gray-200) !important;
+  border-right: 0.5px solid var(--gray-200) !important;
+  border-radius: 0 !important;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 8px 4px !important;
+  -moz-appearance: textfield;
+}
+.pmod-step-input::-webkit-outer-spin-button,
+.pmod-step-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+}
+
+/* Specialization dropdown */
+.pmod-multi-dd {
+  position: relative;
+}
+.pmod-dd-trigger {
+  width: 100%;
+  padding: 8px 11px;
+  border: 0.5px solid var(--gray-300);
+  border-radius: var(--radius);
+  font-size: 13px;
+  font-family: inherit;
+  background: var(--white);
+  cursor: pointer;
+  text-align: left;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  transition: border-color 0.15s;
+}
+.pmod-dd-trigger span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--gray-500);
+  font-size: 13px;
+}
+.pmod-dd-trigger:hover,
+.pmod-dd-open {
+  border-color: var(--black) !important;
+}
+.pmod-dd-list {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: var(--white);
+  border: 0.5px solid var(--gray-200);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+  z-index: 100;
+  max-height: 200px;
+  overflow-y: auto;
+}
+.pmod-dd-empty {
+  padding: 16px;
+  font-size: 12px;
+  color: var(--gray-400);
+  text-align: center;
+}
+.pmod-dd-item {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 9px 12px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.1s;
+  color: var(--black);
+}
+.pmod-dd-item:hover {
+  background: var(--gray-50);
+}
+.pmod-chk {
+  width: 14px;
+  height: 14px;
+  accent-color: var(--black);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+/* Chips */
+.pmod-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+.pmod-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 8px 3px 10px;
+  background: var(--gray-100);
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--black);
+}
+.pmod-chip-remove {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--gray-400);
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  padding: 0;
+  transition: color 0.15s;
+}
+.pmod-chip-remove:hover {
+  color: var(--black);
+}
+
+/* Day buttons */
+.pmod-day-group {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 4px;
+}
+.pmod-day-btn {
+  padding: 6px 14px;
+  border: 0.5px solid var(--gray-200);
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--gray-500);
+  background: var(--white);
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s;
+}
+.pmod-day-btn:hover:not(.pmod-day-disabled) {
+  border-color: var(--black);
+  color: var(--black);
+}
+.pmod-day-checked {
+  background: var(--black) !important;
+  color: var(--white) !important;
+  border-color: var(--black) !important;
+}
+.pmod-day-disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+/* Time availability */
+.pmod-time-block {
+  margin-top: 12px;
+  border: 0.5px solid var(--gray-100);
+  border-radius: var(--radius);
+  padding: 8px 12px;
+  background: var(--gray-50);
+}
+.pmod-time-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--gray-500);
+  margin-bottom: 8px;
+}
+.pmod-time-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0;
+  border-bottom: 0.5px solid var(--gray-100);
+}
+.pmod-time-row:last-child {
+  border-bottom: none;
+}
+.pmod-day-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--gray-600);
+  width: 34px;
+  flex-shrink: 0;
+}
+.pmod-time-sep {
+  font-size: 11px;
+  color: var(--gray-400);
+  flex-shrink: 0;
+}
+
+/* Time wheel dropdowns */
+.pmod-time-wheel {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  background: var(--white);
+  border: 0.5px solid var(--gray-200);
+  border-radius: var(--radius);
+  padding: 3px 6px;
+}
+.pmod-time-sel {
+  border: none;
+  outline: none;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  color: var(--black);
+  background: transparent;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  text-align: center;
+  width: 42px;
+}
+.pmod-time-sel-min {
+  width: 36px;
+}
+.pmod-time-colon {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--black);
+  user-select: none;
+}
+
+/* Error summary */
+.pmod-error-summary {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 14px;
+  background: #fff1f2;
+  border: 0.5px solid #fecdd3;
+  border-radius: var(--radius);
+  margin: 16px 24px 0;
+  color: var(--red);
+  font-size: 12px;
+}
+.pmod-error-summary i {
+  font-size: 16px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.pmod-error-summary-title {
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+.pmod-error-list {
+  margin: 0;
+  padding-left: 16px;
+  line-height: 1.8;
+  color: #be123c;
+}
+
+/* Field errors */
+.pmod-input-error {
+  border-color: var(--red) !important;
+}
+.pmod-field-error {
+  display: block;
+  font-size: 10px;
+  color: var(--red);
+  margin-top: 3px;
+}
+
+/* Footer */
+.pmod-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 14px 24px;
+  border-top: 0.5px solid var(--gray-100);
+  position: sticky;
+  bottom: 0;
+  background: var(--white);
+}
+.pmod-cancel {
+  padding: 8px 18px;
+  border: 0.5px solid var(--gray-300);
+  border-radius: var(--radius);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--gray-600);
+  background: var(--white);
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s;
+}
+.pmod-cancel:hover {
+  border-color: var(--black);
+  color: var(--black);
+}
+.pmod-save {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 18px;
+  background: var(--black);
+  color: var(--white);
+  border: none;
+  border-radius: var(--radius);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: opacity 0.15s;
+}
+.pmod-save:hover {
+  opacity: 0.85;
+}
