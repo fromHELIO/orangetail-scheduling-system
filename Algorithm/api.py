@@ -249,3 +249,8 @@ def get_generation_status(job_id: str):
             detail="Unknown job ID -- it may have expired, or the server may have restarted since it was created.",
         )
     return job
+
+if __name__ == "__main__":
+    import uvicorn
+    # Force binding to localhost on port 8000
+    uvicorn.run(app, host="127.0.0.1", port=8000)
