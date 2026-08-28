@@ -1,8 +1,16 @@
 import pandas as pd
 import joblib
+import os
+import sys
 
-# Load the saved model pipeline once when the module is imported
-MODEL_PATH = "faculty_affinity_model.pkl"
+def get_resource_path(relative_path):
+    """Get absolute path to resource, works for dev and for PyInstaller binary"""
+    if hasattr(sys, '_MEIPASS'):
+        return os.path.join(sys._MEIPASS, relative_path)
+    return os.path.join(os.path.abspath("."), relative_path)
+
+# Pass the model filename through get_resource_path
+MODEL_PATH = get_resource_path("faculty_affinity_model.pkl")
 
 try:
     model_pipeline = joblib.load(MODEL_PATH)
