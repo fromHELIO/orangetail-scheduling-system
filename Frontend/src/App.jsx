@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import { Command } from "@tauri-apps/plugin-shell";
 import LoginScreen from "./screens/login/login_screen";
 import DashboardScreen from "./screens/dashboard/dashboard_screen";
 import UploadScreen from "./screens/upload/upload_screen";
@@ -12,6 +13,46 @@ export default function App() {
   const [viewSchedulesSessionId, setViewSchedulesSessionId] = useState(null);
   const [logOpen, setLogOpen] = useState(false);
 
+  // Ref to prevent double-spawning during React 18 Strict Mode double-mounts
+  const sidecarSpawned = useRef(false);
+
+  // 1. Spawn Python FastAPI Sidecar on Mount
+  useEffect(() => {
+    if (sidecarSpawned.current) return;
+    sidecarSpawned.current = true;
+
+    async function startBackend() {
+      try {
+        console.log("[Tauri]: Spawning Python backend sidecar...");
+        const command = Command.sidecar("bin/schedule-backend");
+
+        command.stdout.on("data", (line) => {
+          console.log(`[Backend STDOUT]: ${line}`);
+        });
+
+        command.stderr.on("data", (line) => {
+          console.error(`[Backend STDERR]: ${line}`);
+        });
+
+        command.on("error", (error) => {
+          console.error("[Backend Process Error]:", error);
+        });
+
+        command.on("close", (data) => {
+          console.warn(`[Backend Exited]: Code ${data.code}, Signal ${data.signal}`);
+        });
+
+        const child = await command.spawn();
+        console.log(`[Tauri]: Python backend running under PID: ${child.pid}`);
+      } catch (error) {
+        console.error("[Tauri]: Failed to launch sidecar executable:", error);
+      }
+    }
+
+    startBackend();
+  }, []);
+
+  // 2. Restore User Session & Screen
   useEffect(() => {
     const user = localStorage.getItem("user");
     if (!user) {

@@ -1,3 +1,13 @@
+import sys
+import os
+import io
+
+# Force UTF-8 encoding for standard streams on Windows to prevent 'charmap' crashes with emojis
+if sys.platform == "win32":
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
+    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8', errors='replace')
+    os.environ["PYTHONIOENCODING"] = "utf-8"
+
 from typing import List, Optional
 import threading
 import time

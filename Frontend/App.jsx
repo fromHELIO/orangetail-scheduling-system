@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { Command } from "@tauri-apps/plugin-shell";
 import LoginScreen from "./screens/login/login_screen";
 import DashboardScreen from "./screens/dashboard/dashboard_screen";
 import UploadScreen from "./screens/upload/upload_screen";
@@ -8,6 +9,30 @@ import ChangeLogPanel from "./change_log_panel";
 import "./App.css";
 
 export default function App() {
+  // Spawn the Python FastAPI backend sidecar on initial component mount
+  useEffect(() => {
+    async function startBackend() {
+      try {
+        const command = Command.sidecar("bin/schedule-backend");
+        
+        command.stdout.on("data", (line) => {
+          console.log(`[Backend]: ${line}`);
+        });
+
+        command.stderr.on("data", (line) => {
+          console.error(`[Backend Error]: ${line}`);
+        });
+
+        const child = await command.spawn();
+        console.log(`Python Backend sidecar started on PID: ${child.pid}`);
+      } catch (error) {
+        console.error("Failed to launch Python sidecar process:", error);
+      }
+    }
+
+    startBackend();
+  }, []);
+
   const [currentScreen, setCurrentScreen] = useState(() => {
     const user = localStorage.getItem("user");
 
@@ -19,7 +44,6 @@ export default function App() {
   });
 
   const [viewSchedulesSessionId, setViewSchedulesSessionId] = useState(null);
-
   const [logOpen, setLogOpen] = useState(false);
 
   function handleLoginSuccess() {
