@@ -271,10 +271,16 @@ export default function AddSectionModal({
           const newStart = toMin(row.start_time);
           const newEnd = toMin(row.end_time);
 
+          if (newEnd <= newStart) {
+            hard.add("End time must be later than start time.");
+            continue;
+          }
+
           // ── Intra-batch overlap ──
           allRows.forEach((other) => {
             if (other.assignmentIdx === idx) return;
             if (normalizeDay(other.day) !== normDay) return;
+
             if (
               !overlaps(
                 newStart,
@@ -282,16 +288,26 @@ export default function AddSectionModal({
                 toMin(other.start_time),
                 toMin(other.end_time),
               )
-            )
+            ) {
               return;
-            if (row.professor_id && row.professor_id === other.professor_id)
+            }
+
+            // Same section cannot have two classes at overlapping times
+            hard.add(
+              "This section has another course scheduled during this time.",
+            );
+
+            if (row.professor_id && row.professor_id === other.professor_id) {
               hard.add(
-                "Professor is assigned to another course at an overlapping time in this batch.",
+                "Professor is assigned to another course at an overlapping time.",
               );
-            if (row.room_id && row.room_id === other.room_id)
+            }
+
+            if (row.room_id && row.room_id === other.room_id) {
               hard.add(
-                "Room is assigned to another course at an overlapping time in this batch.",
+                "Room is assigned to another course at an overlapping time.",
               );
+            }
           });
 
           // ── DB overlap ──
@@ -317,9 +333,7 @@ export default function AddSectionModal({
                 .in("slot_id", overlappingIds)
                 .eq("professor_id", row.professor_id);
               if (data?.length > 0)
-                hard.add(
-                  "Professor is already booked in the DB during this time.",
-                );
+                hard.add("Professor is already booked during this time.");
             }
             if (row.room_id) {
               const { data } = await supabase
@@ -328,7 +342,7 @@ export default function AddSectionModal({
                 .in("slot_id", overlappingIds)
                 .eq("room_id", row.room_id);
               if (data?.length > 0)
-                hard.add("Room is already booked in the DB during this time.");
+                hard.add("Room is already booked during this time.");
             }
           }
 

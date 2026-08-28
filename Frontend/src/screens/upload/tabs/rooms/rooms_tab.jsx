@@ -389,6 +389,121 @@ export default function RoomsTab() {
     }
   }
 
+  function handleDownloadTemplate() {
+    const templateData = [
+      {
+        room: "SJH-501",
+        building_code: "SJH",
+        status: "Active",
+        room_type: "Regular Lecture Room",
+        capacity: 45,
+      },
+      {
+        room: "SJH-706",
+        building_code: "SJH",
+        status: "Active",
+        room_type: "Regular Computer Laboratory",
+        capacity: 40,
+      },
+      {
+        room: "SJH-702",
+        building_code: "SJH",
+        status: "Active",
+        room_type: "CISCO/Networking Laboratory",
+        capacity: 30,
+      },
+      {
+        room: "SJH-704",
+        building_code: "SJH",
+        status: "Active",
+        room_type: "Multimedia Laboratory",
+        capacity: 40,
+      },
+      {
+        room: "PGN-811",
+        building_code: "PGN",
+        status: "Active",
+        room_type: "Foley Room",
+        capacity: 40,
+      },
+    ];
+
+    const instructions = [
+      {
+        Field: "room",
+        Instruction: "Enter the room name or room number (e.g., SJH-501).",
+      },
+      {
+        Field: "building_code",
+        Instruction:
+          "Enter the building code where the room is located (e.g., SJH or PGN).",
+      },
+      {
+        Field: "status",
+        Instruction:
+          'Enter "Active" if the room is available for scheduling. Leave blank if inactive.',
+      },
+      {
+        Field: "room_type",
+        Instruction: "Enter one of the accepted room types listed below.",
+      },
+      {
+        Field: "",
+        Instruction: "Regular Lecture Room",
+      },
+      {
+        Field: "",
+        Instruction: "Regular Computer Laboratory",
+      },
+      {
+        Field: "",
+        Instruction: "CISCO/Networking Laboratory",
+      },
+      {
+        Field: "",
+        Instruction: "Multimedia Laboratory",
+      },
+      {
+        Field: "",
+        Instruction: "Foley Room",
+      },
+      {
+        Field: "capacity",
+        Instruction:
+          "Enter the maximum number of students the room can accommodate.",
+      },
+    ];
+
+    // Create workbook first
+    const wb = XLSX.utils.book_new();
+
+    // Rooms sheet
+    const ws = XLSX.utils.json_to_sheet(templateData);
+
+    ws["!cols"] = [
+      { wch: 16 }, // room
+      { wch: 18 }, // building_code
+      { wch: 12 }, // status
+      { wch: 32 }, // room_type
+      { wch: 12 }, // capacity
+    ];
+
+    // Instructions sheet
+    const instructionWs = XLSX.utils.json_to_sheet(instructions);
+
+    instructionWs["!cols"] = [
+      { wch: 20 }, // Field
+      { wch: 75 }, // Instruction
+    ];
+
+    // Add both sheets
+    XLSX.utils.book_append_sheet(wb, ws, "Rooms");
+    XLSX.utils.book_append_sheet(wb, instructionWs, "Instructions");
+
+    // Download
+    XLSX.writeFile(wb, "rooms_template.xlsx");
+  }
+
   async function handleFileImport(e) {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -480,6 +595,7 @@ export default function RoomsTab() {
         style={{ display: "none" }}
         onChange={handleFileImport}
       />
+
       <div
         className="rooms-upload-zone"
         onClick={() => fileInputRef.current?.click()}
@@ -510,6 +626,18 @@ export default function RoomsTab() {
           <>
             <i className="ti ti-file-upload" />
             <span>Upload Excel (.xlsx) to import rooms</span>
+
+            <button
+              type="button"
+              className="rooms-template-btn"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleDownloadTemplate();
+              }}
+            >
+              <i className="ti ti-download" />
+              Download Template
+            </button>
           </>
         )}
       </div>

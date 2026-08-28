@@ -68,6 +68,20 @@ export default function SectionSchedulesModal({
   const isApproved = session?.status === "Approved";
   const schedules = section?.schedules || [];
 
+  function getRoomName(sched) {
+    if (sched.room_name) return sched.room_name;
+
+    if (sched.room_id) {
+      const room = rooms.find(
+        (r) => Number(r.room_id) === Number(sched.room_id),
+      );
+
+      if (room) return room.room_name;
+    }
+
+    return "TBA";
+  }
+
   const sortedSchedules = useMemo(() => {
     return [...(section?.schedules || [])].sort((a, b) => {
       const ai = normalizeDay(a.day)
@@ -157,6 +171,29 @@ export default function SectionSchedulesModal({
         overlaps(newStart, newEnd, toMin(s.start_time), toMin(s.end_time)),
       )
       .map((s) => s.slot_id);
+    // Hard conflict: same section already has a class during this time
+    if (overlappingIds.length > 0) {
+      const { data, error } = await supabase
+        .from("schedules")
+        .select(
+          `
+      schedule_id,
+      offering_id,
+      class_offerings!inner(section_id)
+    `,
+        )
+        .in("slot_id", overlappingIds)
+        .eq("class_offerings.section_id", section.section_id)
+        .neq("schedule_id", excludeId);
+
+      if (error) {
+        console.error("section conflict error", error);
+      }
+
+      if (data?.length > 0) {
+        hard.push("This section already has a class during this time.");
+      }
+    }
 
     // Hard conflict: professor booked in any overlapping slot
     if (professor_id && overlappingIds.length > 0) {
@@ -210,6 +247,12 @@ export default function SectionSchedulesModal({
     try {
       const start_time = `${editForm.start_h}:${editForm.start_m}`;
       const end_time = `${editForm.end_h}:${editForm.end_m}`;
+
+      if (toMin(end_time) <= toMin(start_time)) {
+        setEditError("End time must be later than start time.");
+        setSaving(false);
+        return;
+      }
 
       // Check conflicts BEFORE creating the slot, passing values explicitly
       const conflicts = await checkConflicts(
@@ -265,9 +308,7 @@ export default function SectionSchedulesModal({
         <div className="ssm-modal" onClick={(e) => e.stopPropagation()}>
           <div className="ssm-header">
             <div>
-              <div className="ssm-title">
-                {section.section_name} Schedules
-              </div>
+              <div className="ssm-title">{section.section_name} Schedules</div>
               <div className="ssm-sub">
                 {section.curriculum_label} · {session?.school_year} ·{" "}
                 {getSemesterLabel(session?.semester)}
@@ -326,8 +367,10 @@ export default function SectionSchedulesModal({
                         )}
                       </td>
                       <td>
-                        {sched.room_name || (
+                        {getRoomName(sched) === "TBA" ? (
                           <span className="apm-tba">TBA</span>
+                        ) : (
+                          getRoomName(sched)
                         )}
                       </td>
                       <td>
@@ -397,7 +440,7 @@ export default function SectionSchedulesModal({
                   </span>
                   <span>
                     <i className="ti ti-building" />{" "}
-                    {editingSchedule.room_name || "—"}
+                    {getRoomName(editingSchedule)}{" "}
                   </span>
                   <span>
                     <i className="ti ti-clock" />{" "}
@@ -472,8 +515,8 @@ export default function SectionSchedulesModal({
                     ) : (
                       <div className="ssm-gen-ed-note">
                         <i className="ti ti-info-circle" />
-                        General Education subject — professor and room are
-                        managed by another department.
+                        General Education subject — professor is managed by
+                        another department.
                       </div>
                     )}
                   </div>
@@ -583,13 +626,6 @@ export default function SectionSchedulesModal({
                     </select>
                   </div>
                 </div>
-              </div>
-
-              <div className="ssm-edit-note">
-                <i className="ti ti-info-circle" />
-                {isApproved
-                  ? "Editing an approved schedule will update the live timetable."
-                  : "Hard conflicts block saving. Soft warnings allow saving."}
               </div>
             </div>
 

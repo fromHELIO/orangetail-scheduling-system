@@ -771,6 +771,124 @@ export default function ProfessorsTab() {
     setSelectedProf(updatedProf);
   }
 
+  function handleDownloadTemplate() {
+    const templateData = [
+      {
+        first_name: "JUAN",
+        middle_name: "SANTOS",
+        last_name: "DELA CRUZ",
+        employee_num: "20901234",
+        birth_date: "1990-01-01",
+        highest_degree_attained: "Master's Degree",
+        employment_status: "Regular",
+        date_of_first_appointment: "2020-06-01",
+        etu: 0,
+        specializations:
+          "Computer Science,Cybersecurity,Entertainment and Multimedia Computing,Information Technology",
+        qualified_subjects: "6CFUN,6LOGPROG,6OOP,6DSAL",
+        available_days: "Monday, Wednesday, Friday",
+        available_time: "08:00-17:00, 08:00-17:00, 08:00-17:00",
+      },
+    ];
+
+    const instructions = [
+      {
+        Field: "first_name",
+        Instruction: "Enter the professor's first name.",
+      },
+      {
+        Field: "middle_name",
+        Instruction:
+          "Enter the professor's middle name. Leave blank if not applicable.",
+      },
+      {
+        Field: "last_name",
+        Instruction: "Enter the professor's last name.",
+      },
+      {
+        Field: "employee_num",
+        Instruction: "Enter the professor's employee number.",
+      },
+      {
+        Field: "birth_date",
+        Instruction: "Enter the birth date using YYYY-MM-DD format.",
+      },
+      {
+        Field: "highest_degree_attained",
+        Instruction:
+          "Choose ONE only: Bachelor's Degree, Master's Degree, or Doctorate (PhD).",
+      },
+      {
+        Field: "employment_status",
+        Instruction:
+          "Choose ONE only: Regular, Probationary, Fixed, or Part-Time.",
+      },
+      {
+        Field: "date_of_first_appointment",
+        Instruction:
+          "Enter the date of first appointment using YYYY-MM-DD format.",
+      },
+      {
+        Field: "etu",
+        Instruction: "Enter the professor's ETU value.",
+      },
+      {
+        Field: "specializations",
+        Instruction:
+          "Enter one or more specializations separated by commas: Computer Science, Cybersecurity, Entertainment and Multimedia Computing, Information Technology.",
+      },
+      {
+        Field: "qualified_subjects",
+        Instruction:
+          "Enter qualified course codes separated by commas (e.g., 6CFUN, 6LOGPROG, 6OOP).",
+      },
+      {
+        Field: "available_days",
+        Instruction:
+          "Enter available days separated by commas (e.g., Monday, Wednesday, Friday).",
+      },
+      {
+        Field: "available_time",
+        Instruction:
+          "Required only for Probationary, Fixed, and Part-Time professors. Regular professors may leave this blank. Use 24-hour HH:MM-HH:MM format, with one time range for each available day (e.g., 08:00-17:00, 13:00-18:00).",
+      },
+    ];
+
+    // Create workbook
+    const wb = XLSX.utils.book_new();
+
+    // Professor template sheet
+    const ws = XLSX.utils.json_to_sheet(templateData);
+
+    ws["!cols"] = [
+      { wch: 16 },
+      { wch: 16 },
+      { wch: 20 },
+      { wch: 16 },
+      { wch: 14 },
+      { wch: 26 },
+      { wch: 20 },
+      { wch: 24 },
+      { wch: 10 },
+      { wch: 50 },
+      { wch: 35 },
+      { wch: 35 },
+      { wch: 50 },
+    ];
+
+    // Instructions sheet
+    const instructionWs = XLSX.utils.json_to_sheet(instructions);
+
+    instructionWs["!cols"] = [{ wch: 30 }, { wch: 100 }];
+
+    // Add BOTH sheets
+    XLSX.utils.book_append_sheet(wb, ws, "Professors");
+    XLSX.utils.book_append_sheet(wb, instructionWs, "Instructions");
+
+    // Download
+    XLSX.writeFile(wb, "professors_template.xlsx");
+  }
+
   async function handleProfessorImport(e) {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -823,7 +941,9 @@ export default function ProfessorsTab() {
           date_of_first_appointment:
             getValue(r, "date_of_first_appointment") || null,
 
-          degree: String(getValue(r, "degree") || "").trim(),
+          degree: String(
+            getValue(r, "highest_degree_attained", "degree") || "",
+          ).trim(),
 
           employment_status: String(
             getValue(r, "employment_status") || "Regular",
@@ -1045,6 +1165,18 @@ export default function ProfessorsTab() {
           <>
             <i className="ti ti-file-upload" aria-hidden="true" />
             <span>Upload Excel (.xlsx) to import professors</span>
+
+            <button
+              type="button"
+              className="profs-template-btn"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleDownloadTemplate(e);
+              }}
+            >
+              <i className="ti ti-download" />
+              Download Template
+            </button>
           </>
         )}
       </div>

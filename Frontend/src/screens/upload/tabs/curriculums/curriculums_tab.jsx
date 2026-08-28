@@ -38,6 +38,8 @@ export default function CurriculumsTab() {
   const [courseCurriculumFilter, setCourseCurriculumFilter] = useState("");
   const [courseRequiredFilter, setCourseRequiredFilter] = useState("");
 
+  const [deleteBlockedMessage, setDeleteBlockedMessage] = useState("");
+
   const [currUploadStatus, setCurrUploadStatus] = useState(null);
   const [currUploadError, setCurrUploadError] = useState("");
   const currFileRef = useRef(null);
@@ -144,6 +146,101 @@ export default function CurriculumsTab() {
   }
 
   async function handleBulkDeleteCurricula() {
+    // Check selected curricula for existing sections
+    const { data: sections, error: sectionCheckErr } = await supabase
+      .from("section")
+      .select("section_id, curriculum_id")
+      .in("curriculum_id", selectedCurriculaIds);
+
+    if (sectionCheckErr) {
+      console.error("Failed to check curriculum usage:", sectionCheckErr);
+      setDeleteStatus("error");
+      return;
+    }
+
+    const sectionIds = (sections || []).map((s) => s.section_id);
+
+    let offeringIds = [];
+
+    // Check class offerings under those sections
+    if (sectionIds.length > 0) {
+      const { data: offerings, error: offeringCheckErr } = await supabase
+        .from("class_offerings")
+        .select("offering_id, section_id")
+        .in("section_id", sectionIds);
+
+      if (offeringCheckErr) {
+        console.error(
+          "Failed to check curriculum offerings:",
+          offeringCheckErr,
+        );
+        setDeleteStatus("error");
+        return;
+      }
+
+      offeringIds = (offerings || []).map((o) => o.offering_id);
+    }
+
+    // Only block deletion if actual schedules still exist
+    if (offeringIds.length > 0) {
+      const { data: existingSchedules, error: scheduleCheckErr } =
+        await supabase
+          .from("schedules")
+          .select("schedule_id")
+          .in("offering_id", offeringIds)
+          .limit(1);
+
+      if (scheduleCheckErr) {
+        console.error(
+          "Failed to check curriculum schedules:",
+          scheduleCheckErr,
+        );
+        setDeleteStatus("error");
+        return;
+      }
+
+      if (existingSchedules && existingSchedules.length > 0) {
+        setBulkCurriculaConfirm(false);
+
+        setDeleteBlockedMessage(
+          "Cannot delete this curriculum because it is still used by an existing schedule. Archive it instead.",
+        );
+
+        return;
+      }
+    }
+
+    // No schedules remain, so clean up leftover class offerings
+    if (offeringIds.length > 0) {
+      const { error: offeringDeleteErr } = await supabase
+        .from("class_offerings")
+        .delete()
+        .in("offering_id", offeringIds);
+
+      if (offeringDeleteErr) {
+        console.error(
+          "Failed to delete unused class offerings:",
+          offeringDeleteErr,
+        );
+        setDeleteStatus("error");
+        return;
+      }
+    }
+
+    // Clean up leftover sections
+    if (sectionIds.length > 0) {
+      const { error: sectionDeleteErr } = await supabase
+        .from("section")
+        .delete()
+        .in("section_id", sectionIds);
+
+      if (sectionDeleteErr) {
+        console.error("Failed to delete unused sections:", sectionDeleteErr);
+        setDeleteStatus("error");
+        return;
+      }
+    }
+
     // Find courses linked to the curricula being deleted
     const linkedCourseIds = curriculumCourses
       .filter((cc) => selectedCurriculaIds.includes(cc.curriculum_id))
@@ -151,44 +248,81 @@ export default function CurriculumsTab() {
 
     // Delete curriculum_courses links first
     for (const id of selectedCurriculaIds) {
-      await supabase
+      const { error: linkDeleteErr } = await supabase
         .from("curriculum_courses")
         .delete()
         .eq("curriculum_id", id);
+
+      if (linkDeleteErr) {
+        console.error(
+          "Failed to delete curriculum-course links:",
+          linkDeleteErr,
+        );
+        setDeleteStatus("error");
+        return;
+      }
     }
 
-    // Find courses still linked to other curricula after deletion
+    // Find courses still linked to other curricula
     const stillLinked = curriculumCourses
       .filter((cc) => !selectedCurriculaIds.includes(cc.curriculum_id))
       .map((cc) => cc.course_id);
 
-    // Only delete courses that are no longer linked anywhere
+    // Only delete courses no longer used by another curriculum
     const orphanedCourseIds = linkedCourseIds.filter(
       (id) => !stillLinked.includes(id),
     );
+
     if (orphanedCourseIds.length > 0) {
-      await supabase
+      const { error: courseDeleteErr } = await supabase
         .from("courses")
         .delete()
         .in("course_id", orphanedCourseIds);
+
+      if (courseDeleteErr) {
+        console.error("Failed to delete orphaned courses:", courseDeleteErr);
+        setDeleteStatus("error");
+        return;
+      }
     }
 
-    // Delete the curricula
+    // Delete curricula
     for (const id of selectedCurriculaIds) {
-      await supabase.from("curricula").delete().eq("curriculum_id", id);
+      const { error: deleteCurrErr } = await supabase
+        .from("curricula")
+        .delete()
+        .eq("curriculum_id", id);
+
+      if (deleteCurrErr) {
+        console.error("Failed to delete curriculum:", deleteCurrErr);
+
+        setDeleteBlockedMessage(
+          "Cannot delete this curriculum because it is still referenced by existing records. Archive it instead.",
+        );
+
+        setDeleteStatus("error");
+        setBulkCurriculaConfirm(false);
+
+        return;
+      }
     }
 
+    // Update UI
     setCurricula((prev) =>
       prev.filter((c) => !selectedCurriculaIds.includes(c.curriculum_id)),
     );
+
     setCurriculumCourses((prev) =>
       prev.filter((cc) => !selectedCurriculaIds.includes(cc.curriculum_id)),
     );
+
     setCourses((prev) =>
       prev.filter((c) => !orphanedCourseIds.includes(c.course_id)),
     );
-    if (selectedCurriculaIds.includes(selectedCurriculum?.curriculum_id))
+
+    if (selectedCurriculaIds.includes(selectedCurriculum?.curriculum_id)) {
       setSelectedCurriculum(null);
+    }
 
     await supabase.from("change_log").insert({
       action: "Deleted curricula",
@@ -200,6 +334,7 @@ export default function CurriculumsTab() {
     setSelectedCurriculaIds([]);
     setBulkCurriculaConfirm(false);
     setDeleteStatus("success");
+
     setTimeout(() => setDeleteStatus(null), 3000);
   }
 
@@ -302,6 +437,87 @@ export default function CurriculumsTab() {
       );
     return matchSearch && matchLab && matchCurriculum && matchRequired;
   });
+
+  function handleDownloadCurriculumTemplate() {
+    const templateData = [
+      {
+        program_code: "BSCS",
+        curriculum_year: 2022,
+        course_code: "6CFUN",
+        course_name: "Computer Fundamentals",
+        units: 3,
+        lec_hours: 3,
+        lab_hours: 0,
+        lab_cat: "NONE",
+        year_lvl: 1,
+        semester: 1,
+        is_required: "TRUE",
+      },
+    ];
+
+    const instructions = [
+      {
+        Field: "program_code",
+        Instruction:
+          "Choose ONE valid program code: BSCS, BSIT-NETAD, BSIT-WEBDEV, BSEMC, or BSCYBERSEC.",
+      },
+      {
+        Field: "curriculum_year",
+        Instruction: "Enter the curriculum year (e.g., 2022).",
+      },
+      {
+        Field: "year_lvl",
+        Instruction:
+          "Use 1–4 for required courses. Use 0 for elective courses.",
+      },
+      {
+        Field: "semester",
+        Instruction:
+          "Use 1 or 2 for required courses. Use 0 for elective courses.",
+      },
+      {
+        Field: "is_required",
+        Instruction:
+          "Use TRUE for required courses and FALSE for elective courses.",
+      },
+    ];
+
+    // 1. Create workbook FIRST
+    const wb = XLSX.utils.book_new();
+
+    // 2. Create curriculum sheet
+    const ws = XLSX.utils.json_to_sheet(templateData);
+
+    ws["!cols"] = [
+      { wch: 16 },
+      { wch: 18 },
+      { wch: 16 },
+      { wch: 30 },
+      { wch: 10 },
+      { wch: 12 },
+      { wch: 12 },
+      { wch: 16 },
+      { wch: 12 },
+      { wch: 12 },
+      { wch: 14 },
+    ];
+
+    // 3. Create instructions sheet
+    const instructionWs = XLSX.utils.json_to_sheet(instructions);
+
+    instructionWs["!cols"] = [{ wch: 18 }, { wch: 65 }];
+
+    // 4. Add BOTH sheets to the SAME workbook
+    XLSX.utils.book_append_sheet(wb, ws, "Curriculum Template");
+
+    XLSX.utils.book_append_sheet(wb, instructionWs, "Instructions");
+
+    // Optional debug — should print both sheet names
+    console.log(wb.SheetNames);
+
+    // 5. Download
+    XLSX.writeFile(wb, "curriculum_upload_template.xlsx");
+  }
 
   async function handleCurriculumImport(e) {
     const files = Array.from(e.target.files || []);
@@ -489,12 +705,17 @@ export default function CurriculumsTab() {
               totalCourses++;
             }
 
-            const { data: existingLink } = await supabase
-              .from("curriculum_courses")
-              .select("curriculum_course_id")
-              .eq("curriculum_id", curriculumId)
-              .eq("course_id", courseId)
-              .limit(1);
+            const { data: existingLink, error: existingLinkError } =
+              await supabase
+                .from("curriculum_courses")
+                .select("curriculum_id, course_id")
+                .eq("curriculum_id", curriculumId)
+                .eq("course_id", courseId)
+                .limit(1);
+
+            if (existingLinkError) {
+              throw existingLinkError;
+            }
 
             if (!existingLink || existingLink.length === 0) {
               const { error: linkErr } = await supabase
@@ -618,6 +839,16 @@ export default function CurriculumsTab() {
             style={{ display: "none" }}
             onChange={handleCurriculumImport}
           />
+
+          <input
+            ref={currFileRef}
+            type="file"
+            accept=".xlsx,.xls"
+            multiple
+            style={{ display: "none" }}
+            onChange={handleCurriculumImport}
+          />
+
           <div
             className="curr-upload-zone"
             onClick={() => currFileRef.current?.click()}
@@ -653,6 +884,17 @@ export default function CurriculumsTab() {
                 <span>Upload Excel (.xlsx) to import curriculum</span>
               </>
             )}
+            <button
+              type="button"
+              className="curr-template-link"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleDownloadCurriculumTemplate();
+              }}
+            >
+              <i className="ti ti-download" />
+              Download Template
+            </button>
           </div>
 
           <div className="curr-split">
@@ -677,7 +919,7 @@ export default function CurriculumsTab() {
                   <div className="curr-list-header-right">
                     {deleteStatus === "success" && (
                       <span className="curr-delete-success">
-                        <i className="ti ti-circle-check" /> Deleted
+                        <i className="ti ti-circle-check" /> Deleted Sucessfully
                       </span>
                     )}
                     {selectedCurriculaIds.length > 0 && (
@@ -1154,6 +1396,32 @@ export default function CurriculumsTab() {
                 <i className="ti ti-archive" /> Archive
               </button>
             </div>
+          </div>
+        </div>
+      )}
+      {deleteBlockedMessage && (
+        <div
+          className="curr-overlay"
+          onClick={() => setDeleteBlockedMessage("")}
+        >
+          <div
+            className="curr-blocked-box"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="curr-blocked-icon">
+              <i className="ti ti-alert-circle" />
+            </div>
+
+            <div className="curr-blocked-title">Cannot Delete Curriculum</div>
+
+            <p className="curr-blocked-msg">{deleteBlockedMessage}</p>
+
+            <button
+              className="curr-blocked-btn"
+              onClick={() => setDeleteBlockedMessage("")}
+            >
+              Okay
+            </button>
           </div>
         </div>
       )}

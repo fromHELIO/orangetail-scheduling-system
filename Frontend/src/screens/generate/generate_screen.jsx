@@ -26,6 +26,7 @@ const CURRENT_YEAR = new Date().getFullYear();
 function isMajor(courseCode) {
   return (courseCode || "").startsWith("6");
 }
+
 function normDay(d) {
   if (!d) return d;
   const MAP = {
@@ -364,83 +365,39 @@ export default function GenerateScreen({ onBack, onViewSchedules }) {
     try {
       const apiUrl = import.meta.env.VITE_ALGORITHM_API_URL;
       if (!apiUrl) throw new Error("VITE_ALGORITHM_API_URL is not set.");
-
-      // Required when apiUrl points at an ngrok tunnel -- ngrok's free tier
-      // injects an HTML warning page on the first request from any client
-      // unless this header is present, which would otherwise break these
-      // fetches (JSON expected, HTML received). Harmless against a normal
-      // server, which just ignores an unrecognized header.
-      const ngrokHeaders = { "ngrok-skip-browser-warning": "true" };
-
-      // 1. Start the job. This returns almost immediately with a job ID,
-      // rather than holding one connection open for the full generation,
-      // which can take up to an hour or more. Polling below replaces that
-      // single long-lived connection with short, independent checks -- no
-      // one request has to survive the whole computation, so a dropped
-      // connection just means the next poll retries moments later, not a
-      // lost result.
-      const startRes = await fetch(`${apiUrl}/api/generate-schedule`, {
+      const res = await fetch(`${apiUrl}/api/generate-schedule`, {
         method: "POST",
-        headers: { "Content-Type": "application/json", ...ngrokHeaders },
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({
           school_year: `${schoolYearStart}-${schoolYearEnd}`,
           semester: Number(semester),
           block_requests: blockRequests,
         }),
       });
-      if (!startRes.ok) {
-        const body = await startRes.json().catch(() => null);
-        throw new Error(
-          body?.detail || `Generation failed to start (${startRes.status}).`,
-        );
+      if (!res.ok) {
+        const body = await res.json().catch(() => null);
+        throw new Error(body?.detail || `Generation failed (${res.status}).`);
       }
-      const { job_id: jobId } = await startRes.json();
-
-      // 2. Poll for completion every few seconds.
-      const POLL_INTERVAL_MS = 4000;
-      const MAX_POLL_HOURS = 3;
-      const maxAttempts = Math.ceil(
-        (MAX_POLL_HOURS * 60 * 60 * 1000) / POLL_INTERVAL_MS,
-      );
-
-      let job = null;
-      for (let attempt = 0; attempt < maxAttempts; attempt++) {
-        await new Promise((resolve) => setTimeout(resolve, POLL_INTERVAL_MS));
-        const pollRes = await fetch(
-          `${apiUrl}/api/generate-schedule/${jobId}`,
-          { headers: ngrokHeaders },
-        );
-        if (!pollRes.ok) {
-          if (pollRes.status === 404) {
-            throw new Error(
-              "The generation job could not be found — the backend may have restarted while this was running. Please try generating again.",
-            );
-          }
-          const body = await pollRes.json().catch(() => null);
-          throw new Error(
-            body?.detail ||
-              `Checking generation status failed (${pollRes.status}).`,
-          );
-        }
-        job = await pollRes.json();
-        if (job.status === "complete" || job.status === "failed") break;
-      }
-
-      if (!job || job.status === "running") {
-        throw new Error(
-          "Generation is taking longer than expected and this session stopped waiting. The backend may still be working on it — check the terminal, or try again shortly.",
-        );
-      }
-      if (job.status === "failed") {
-        throw new Error(job.error || "Generation failed.");
-      }
-
       const {
         schedule: items,
         hard_violations: hardViolations,
         violation_breakdown: violationBreakdown,
         violation_drilldowns: violationDrilldowns,
-      } = job.result;
+      } = await res.json();
+
+      console.log("ALGORITHM ITEMS:", items);
+
+      console.table(
+        items.map((it) => ({
+          course: it.course_code,
+          section: it.section_name,
+          room: it.room,
+          room_id: it.room_id,
+          room_name: it.room_name,
+        })),
+      );
       if (!items?.length)
         throw new Error("The algorithm didn't return any schedule items.");
 
@@ -559,9 +516,7 @@ export default function GenerateScreen({ onBack, onViewSchedules }) {
       ].filter((o) => o.section_id && o.course_id);
 
       const computeClassCode = (sectionId, courseId) => {
-        const secName = (
-          sectionNameById[sectionId] || String(sectionId)
-        )
+        const secName = (sectionNameById[sectionId] || String(sectionId))
           .replace(/\s+/g, "")
           .replace(/-/g, "");
         const courseCode = courseCodeById[courseId] || String(courseId);
@@ -643,7 +598,9 @@ export default function GenerateScreen({ onBack, onViewSchedules }) {
           const offeringId = offeringMap[`${sId}|${cId}`];
           if (!cId) {
             console.warn("[GEN] skipping — course not found:", it.course_code);
-            skippedItems.push(`${it.course_code || "unknown course"} (course not recognized)`);
+            skippedItems.push(
+              `${it.course_code || "unknown course"} (course not recognized)`,
+            );
             return null;
           }
           if (!sId) {
@@ -651,7 +608,9 @@ export default function GenerateScreen({ onBack, onViewSchedules }) {
               "[GEN] skipping — section not found:",
               it.section_name,
             );
-            skippedItems.push(`${it.section_name || "unknown section"} (section not recognized)`);
+            skippedItems.push(
+              `${it.section_name || "unknown section"} (section not recognized)`,
+            );
             return null;
           }
           if (!slotId) {
@@ -661,19 +620,25 @@ export default function GenerateScreen({ onBack, onViewSchedules }) {
               it.start_time,
               it.end_time,
             );
-            skippedItems.push(`${it.course_code || "item"} (time slot ${it.day} ${it.start_time}-${it.end_time} not recognized)`);
+            skippedItems.push(
+              `${it.course_code || "item"} (time slot ${it.day} ${it.start_time}-${it.end_time} not recognized)`,
+            );
             return null;
           }
           if (!offeringId) {
             console.warn("[GEN] skipping — offering not found:", { sId, cId });
-            skippedItems.push(`${it.course_code || "item"} in ${it.section_name || "unknown section"} (offering not recognized)`);
+            skippedItems.push(
+              `${it.course_code || "item"} in ${it.section_name || "unknown section"} (offering not recognized)`,
+            );
             return null;
           }
+
           const major = isMajor(it.course_code);
+
           return {
             offering_id: offeringId,
-            professor_id: major ? it.professor_id || null : null,
-            room_id: major ? it.room_id || null : null,
+            professor_id: major ? it.professor_id || null : null, // GenEd = Unassigned
+            room_id: it.room_id || null, // GenEd = room assigned
             slot_id: slotId,
             status: "Generated",
             generated_at: generatedAt,
@@ -704,7 +669,11 @@ export default function GenerateScreen({ onBack, onViewSchedules }) {
         setSelectedSection(null);
       }
 
-      if (hardViolations > 0 || skippedItems.length > 0 || reusedOfferings.length > 0) {
+      if (
+        hardViolations > 0 ||
+        skippedItems.length > 0 ||
+        reusedOfferings.length > 0
+      ) {
         setGenerateWarning({
           hardViolations: hardViolations || 0,
           violationBreakdown: violationBreakdown || {},
@@ -758,6 +727,11 @@ export default function GenerateScreen({ onBack, onViewSchedules }) {
   }
 
   async function handleDeleteSession(session) {
+    // Approved sessions cannot be deleted
+    if (session.status?.toLowerCase() === "approved") {
+      return;
+    }
+
     const ids = session.sections
       .flatMap((s) => s.schedules.map((sc) => sc.schedule_id))
       .filter(Boolean);
@@ -1011,15 +985,18 @@ export default function GenerateScreen({ onBack, onViewSchedules }) {
                       >
                         {s.status}
                       </span>
-                      <button
-                        className="gen-session-delete-btn"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setDeleteSessionConfirm(s);
-                        }}
-                      >
-                        <i className="ti ti-trash" />
-                      </button>
+
+                      {s.status?.toLowerCase() !== "approved" && (
+                        <button
+                          className="gen-session-delete-btn"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setDeleteSessionConfirm(s);
+                          }}
+                        >
+                          <i className="ti ti-trash" />
+                        </button>
+                      )}
                     </div>
                   </div>
                 ))
@@ -1310,6 +1287,7 @@ export default function GenerateScreen({ onBack, onViewSchedules }) {
         selectedSession={selectedSession}
         getSemesterLabel={getSemesterLabel}
         onApprove={handleApprove}
+        rooms={rooms}
       />
     </div>
   );

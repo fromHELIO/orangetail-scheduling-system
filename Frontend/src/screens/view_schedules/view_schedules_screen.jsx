@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import * as XLSX from "xlsx";
 import { supabase } from "../../lib/supabaseClient";
+import { HOURS, MINUTES } from "../generate/generate_utils";
 import "./view_schedules_screen.css";
 import "../generate/sessions/approve_session_modal.css";
 
@@ -26,10 +27,6 @@ const DAY_ORDER = [
   "Saturday",
   "Sunday",
 ];
-const HOURS = Array.from({ length: 15 }, (_, i) =>
-  String(i + 6).padStart(2, "0"),
-); // 06-20
-const MINUTES = ["00", "15", "30", "45"];
 
 function getSemesterLabel(val) {
   return SEMESTERS.find((s) => s.value === val)?.label || "—";
@@ -175,6 +172,8 @@ export default function ViewSchedulesScreen({ onBack, initialSessionId }) {
   const [filterCurriculum, setFilterCurriculum] = useState("");
   const [filterYear, setFilterYear] = useState("");
   const [filterSection, setFilterSection] = useState("");
+  const [filterCourse, setFilterCourse] = useState("");
+  const [filterProfessor, setFilterProfessor] = useState("");
 
   // Edit modal
   const [editingSchedule, setEditingSchedule] = useState(null);
@@ -247,15 +246,54 @@ export default function ViewSchedulesScreen({ onBack, initialSessionId }) {
     ),
   ].sort();
 
+  const courseOptions = [
+    ...new Map(
+      sessionSchedules
+        .filter((s) => s.course_code)
+        .map((s) => [
+          s.course_code,
+          {
+            code: s.course_code,
+            name: s.course_name,
+          },
+        ]),
+    ).values(),
+  ].sort((a, b) => a.code.localeCompare(b.code));
+
+  const professorOptions = [
+    ...new Set(sessionSchedules.map((s) => s.professor_name).filter(Boolean)),
+  ].sort();
+
   const filtered = sessionSchedules.filter((s) => {
     if (filterCurriculum && s.curriculum_label !== filterCurriculum)
       return false;
+
     if (filterYear && s.year_lvl !== +filterYear) return false;
+
     if (filterSection && s.section_name !== filterSection) return false;
+
+    if (filterCourse && s.course_code !== filterCourse) return false;
+
+    if (filterProfessor && s.professor_name !== filterProfessor) return false;
+
     return true;
   });
 
   const grouped = groupSchedules(filtered);
+
+  function getRoomName(sched) {
+    if (sched.room_name) return sched.room_name;
+
+    if (sched.room_id) {
+      const room = rooms.find(
+        (r) => Number(r.room_id) === Number(sched.room_id),
+      );
+
+      if (room) return room.room_name;
+    }
+
+    return "TBA";
+  }
 
   function openEditModal(sched) {
     setEditingSchedule(sched);
@@ -386,6 +424,48 @@ export default function ViewSchedulesScreen({ onBack, initialSessionId }) {
           hard.push("Room has an overlapping class at this time.");
       }
     }
+    // Section overlap — same section cannot have overlapping classes
+    const startMin = timeToMinutes(`${editForm.start_h}:${editForm.start_m}`);
+    const endMin = timeToMinutes(`${editForm.end_h}:${editForm.end_m}`);
+
+    const overlappingSectionSlots = timeSlots.filter((t) => {
+      if (normDay(t.day) !== editForm.day) return false;
+
+      const tStart = timeToMinutes(t.start_time);
+      const tEnd = timeToMinutes(t.end_time);
+
+      return startMin < tEnd && endMin > tStart;
+    });
+
+    const conflictSlotIds = [
+      ...new Set([slotId, ...overlappingSectionSlots.map((t) => t.slot_id)]),
+    ];
+
+    if (editingSchedule.section_id && conflictSlotIds.length > 0) {
+      const { data: sectionSchedules } = await supabase
+        .from("schedules")
+        .select(
+          `
+      schedule_id,
+      slot_id,
+      class_offerings (
+        section_id
+      )
+    `,
+        )
+        .in("slot_id", conflictSlotIds)
+        .neq("schedule_id", excludeId);
+
+      const hasSectionConflict = (sectionSchedules || []).some(
+        (s) => s.class_offerings?.section_id === editingSchedule.section_id,
+      );
+
+      if (hasSectionConflict) {
+        hard.push(
+          `${editingSchedule.section_name} already has another class that overlaps with this time.`,
+        );
+      }
+    }
     return { hard, soft };
   }
 
@@ -490,7 +570,7 @@ export default function ViewSchedulesScreen({ onBack, initialSessionId }) {
                     "Course Code": sched.course_code || "",
                     "Course Name": sched.course_name || "",
                     Professor: sched.professor_name || "Unassigned",
-                    Room: sched.room_name || "TBA",
+                    Room: getRoomName(sched),
                     Day: normDay(sched.day) || "",
                     Time:
                       sched.start_time && sched.end_time
@@ -573,6 +653,8 @@ export default function ViewSchedulesScreen({ onBack, initialSessionId }) {
               setFilterCurriculum("");
               setFilterYear("");
               setFilterSection("");
+              setFilterCourse("");
+              setFilterProfessor("");
             }}
           >
             <option value="">— Select session —</option>
@@ -639,6 +721,48 @@ export default function ViewSchedulesScreen({ onBack, initialSessionId }) {
                 ))}
               </select>
             </div>
+            <div className="vs-filter-group">
+              <label>Professor</label>
+
+              <select
+                className="vs-filter-select"
+                value={filterProfessor}
+                onChange={(e) => setFilterProfessor(e.target.value)}
+              >
+                <option value="">All professors</option>
+
+                {professorOptions.map((prof) => {
+                  const parts = prof.trim().split(/\s+/);
+                  const lastName = parts.pop();
+                  const firstName = parts.join(" ");
+
+                  return (
+                    <option key={prof} value={prof}>
+                      {lastName}, {firstName}
+                    </option>
+                  );
+                })}
+              </select>
+            </div>
+
+            <div className="vs-filter-group">
+              <label>Course</label>
+
+              <select
+                className="vs-filter-select"
+                value={filterCourse}
+                onChange={(e) => setFilterCourse(e.target.value)}
+              >
+                <option value="">All courses</option>
+
+                {courseOptions.map((course) => (
+                  <option key={course.code} value={course.code}>
+                    {course.code} — {course.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
             <div className="vs-filter-group vs-filter-group-right">
               <span
                 className={`vs-status-badge vs-status-badge-lg ${getStatusClass(selectedSession.status)}`}
@@ -722,10 +846,12 @@ export default function ViewSchedulesScreen({ onBack, initialSessionId }) {
                                         )}
                                       </td>
                                       <td>
-                                        {sched.room_name || (
+                                        {getRoomName(sched) === "TBA" ? (
                                           <span className="vs-unassigned">
                                             TBA
                                           </span>
+                                        ) : (
+                                          getRoomName(sched)
                                         )}
                                       </td>
                                       <td>
@@ -812,7 +938,7 @@ export default function ViewSchedulesScreen({ onBack, initialSessionId }) {
                   </span>
                   <span>
                     <i className="ti ti-building" />{" "}
-                    {editingSchedule.room_name || "TBA"}
+                    {getRoomName(editingSchedule)}{" "}
                   </span>
                   <span>
                     <i className="ti ti-clock" /> {normDay(editingSchedule.day)}{" "}
@@ -997,12 +1123,6 @@ export default function ViewSchedulesScreen({ onBack, initialSessionId }) {
                         </select>
                       </div>
                     </div>
-                  </div>
-
-                  <div className="vs-edit-note">
-                    <i className="ti ti-info-circle" />
-                    Hard conflicts block saving. Soft warnings allow saving with
-                    caution.
                   </div>
                 </>
               ) : (
