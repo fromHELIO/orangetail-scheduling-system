@@ -482,10 +482,10 @@ export default function CurriculumsTab() {
       },
     ];
 
-    // 1. Create workbook FIRST
+    // Create workbook
     const wb = XLSX.utils.book_new();
 
-    // 2. Create curriculum sheet
+    // Curriculum template sheet
     const ws = XLSX.utils.json_to_sheet(templateData);
 
     ws["!cols"] = [
@@ -502,12 +502,12 @@ export default function CurriculumsTab() {
       { wch: 14 },
     ];
 
-    // 3. Create instructions sheet
+    // Instructions sheet
     const instructionWs = XLSX.utils.json_to_sheet(instructions);
 
     instructionWs["!cols"] = [{ wch: 18 }, { wch: 65 }];
 
-    // 4. Add BOTH sheets to the SAME workbook
+    // Add BOTH sheets
     XLSX.utils.book_append_sheet(wb, ws, "Curriculum Template");
 
     XLSX.utils.book_append_sheet(wb, instructionWs, "Instructions");
@@ -515,8 +515,9 @@ export default function CurriculumsTab() {
     // Optional debug — should print both sheet names
     console.log(wb.SheetNames);
 
-    // 5. Download
+    // Download
     XLSX.writeFile(wb, "curriculum_upload_template.xlsx");
+    alert("Template downloaded successfully.");
   }
 
   async function handleCurriculumImport(e) {
@@ -1305,9 +1306,29 @@ export default function CurriculumsTab() {
                                   </span>
                                 ))}
                                 {extra > 0 && (
-                                  <span className="curr-appears-more">
-                                    +{extra} more
-                                  </span>
+                                  <details className="curr-appears-details">
+                                    <summary className="curr-appears-more">
+                                      +{extra} more
+                                    </summary>
+
+                                    <div className="curr-appears-extra">
+                                      {appearances
+                                        .slice(visible.length)
+                                        .map((a, i) => (
+                                          <span
+                                            key={i}
+                                            className={`curr-appears-chip ${
+                                              a.is_required
+                                                ? "curr-chip-required"
+                                                : "curr-chip-elective"
+                                            }`}
+                                          >
+                                            {a.label} ·{" "}
+                                            {a.is_required ? "Req" : "Elec"}
+                                          </span>
+                                        ))}
+                                    </div>
+                                  </details>
                                 )}
                               </>
                             )}
