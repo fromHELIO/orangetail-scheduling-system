@@ -706,3 +706,14 @@
   font-weight: 600;
   color: var(--green);
 }
+
+/* + more */
+.curr-appears-more {
+  list-style: none;
+  cursor: pointer;
+  display: inline-block;
+}
+
+.curr-appears-more::-webkit-details-marker {
+  display: none;
+}
