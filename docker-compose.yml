@@ -1,11 +1,13 @@
 services:
   algorithm:
     build: ./Algorithm
+    image: fromhelio/orangetail-algorithm:latest
     container_name: orangetail-algorithm
     env_file: .env
     ports:
       - "8000:8000"
     restart: unless-stopped
+
 
   frontend:
     build:
@@ -14,6 +16,7 @@ services:
         VITE_SUPABASE_URL: ${VITE_SUPABASE_URL}
         VITE_SUPABASE_ANON_KEY: ${VITE_SUPABASE_ANON_KEY}
         VITE_ALGORITHM_API_URL: ${VITE_ALGORITHM_API_URL:-http://localhost:8000}
+    image: fromhelio/orangetail-frontend:latest
     container_name: orangetail-frontend
     ports:
       - "8080:80"
