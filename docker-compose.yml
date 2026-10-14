@@ -1,0 +1,22 @@
+services:
+  algorithm:
+    build: ./Algorithm
+    container_name: orangetail-algorithm
+    env_file: .env
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./Frontend
+      args:
+        VITE_SUPABASE_URL: ${VITE_SUPABASE_URL}
+        VITE_SUPABASE_ANON_KEY: ${VITE_SUPABASE_ANON_KEY}
+        VITE_ALGORITHM_API_URL: ${VITE_ALGORITHM_API_URL:-http://localhost:8000}
+    container_name: orangetail-frontend
+    ports:
+      - "8080:80"
+    depends_on:
+      - algorithm
+    restart: unless-stopped

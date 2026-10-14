@@ -1,0 +1,7 @@
+node_modules
+dist
+dist.zip
+src-tauri
+supabase
+.env
+.env.*
